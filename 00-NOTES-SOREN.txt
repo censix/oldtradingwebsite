@@ -1,4 +1,3 @@
-
 XXXXXXXXXXXXXX
 ==========================================================================
 
@@ -9,14 +8,507 @@ XXXXXXXXXXXXXX
 
 
 
-XXXXXXXXXXXXXX
+pairs (classic): raw prices + adf test
 ==========================================================================
+require(quantmod)
+ A <- getSymbols('GLD',auto.assign=FALSE)
+ B <- getSymbols('GDX',auto.assign=FALSE)
+ #C <- getSymbols('AAPL',auto.assign=FALSE)
+
+##################################################
+ ############### CLASSIC ###################################
+ ##################################################
+
+# beta: price
+ al <- Ad(A)
+ bl <- Ad(B)
+ colnames(al) <- 'A'
+ colnames(bl) <- 'B'
+ require(MASS)
+ beta.calc <- rollapply(data=cbind(al,bl),width=40,by=1,by.column = FALSE,
+ function(z){
+ #c(nrow(z),ncol(z))
+ fit <- rlm(A~B+0,data=as.data.frame(z))
+ as.numeric(fit$coef)
+ }, align = "right")
+
+plot(beta.calc)
+
+# mr.test.adf
+ require(tseries)
+ al <- Ad(A)
+ bl <- Ad(B)
+ test.in <- na.omit(cbind(beta.calc,al,bl))
+ colnames(test.in) <- c('beta','A','B')
+ mr.test.adf <- rollapply(data=test.in,width=40,by=1,by.column = FALSE,
+ function(z){
+ #return(c(nrow(z),ncol(z)))
+ #return(as.numeric(c(last(z$A),last(z$beta),last(z$B))))
+ spread <- as.data.frame(z$A - z$beta*z$B)
+ #as.numeric(last(spread))
+ tt <- adf.test(x=spread$A, alternative = "stationary", k=0)
+ as.numeric(tt$p.value)
+ }, align = "right")
+
+plot(mr.test.adf)
+ # percentage of days where the spread is mr with <0.05 significance
+ sum(mr.test.adf<0.05,na.rm=TRUE)/nrow(mr.test.adf)
+
+# PENDING. how long will a fitted model (spread) stay valid with the
+ # same parameters. or in other words, how often do we have to refit ?
+
+ 
+
+#~ # inspired by
+ #~ # http://epchan.blogspot.ch/2013/11/cointegration-trading-with-log-prices.html
+ #~ require(quantmod)
+ #~ A <- getSymbols('YHOO',auto.assign=FALSE)
+ #~ B <- getSymbols('GOOG',auto.assign=FALSE)
+ #~ C <- getSymbols('AAPL',auto.assign=FALSE)
+ #~
+ #~
+ #~ # mr.test.simple http://epchan.blogspot.ch/2013/11/cointegration-trading-with-log-prices.html
+ #~ a<-diff(log(Ad(A)))
+ #~ b<-diff(log(Ad(B)))
+ #~ #varA <- runVar(a,n=20)
+ #~ #varB <- runVar(b,n=20)
+ #~ #covAB <- runCov(a,b,n=20)
+ #~ mr.test.simple <- rollapply(data=cbind(a,b),width=20,by=1,by.column = FALSE,
+ #~ function(z){
+ #~     #c(nrow(z),ncol(z))
+ #~     cov.mat <- cov(z)
+ #~     #as.numeric(cov.mat[1,2])
+ #~     as.numeric(mean(diag(cov.mat))-cov.mat[1,2]) # want this to be zero
+ #~ }, align = "right")
+ #~
+ #~
+ #~ # beta: log price
+ #~ al <- log(Ad(A))
+ #~ bl <- log(Ad(B))
+ #~ colnames(al) <- 'A'
+ #~ colnames(bl) <- 'B'
+ #~ require(MASS)
+ #~ beta.calc <- rollapply(data=cbind(al,bl),width=20,by=1,by.column = FALSE,
+ #~ function(z){
+ #~     #c(nrow(z),ncol(z))
+ #~     fit <- rlm(A~B+0,data=as.data.frame(z))
+ #~     as.numeric(fit$coef)
+ #~ }, align = "right")
+ #~
+
+ 
+
+############### original below ##########
+
+library(tseries) #for adf.test
+ require(quantmod)
+
+getSymbols('GLD')
+ getSymbols('GDX')
+
+gld <- Ad(GLD)
+ gdx <- Ad(GDX)
+
+t.zoo <- merge(gld, gdx, all=FALSE)
+ t <- as.data.frame(t.zoo)
+ colnames(t) <- c('GLD','GDX')
+
+cat("Date range is", format(start(t.zoo)), "to", format(end(t.zoo)), "n")
+
+m <- lm(GLD ~ GDX + 0, data=t)
+ beta <- coef(m)[1]
+
+cat("Assumed hedge ratio is", beta, "n")
+
+sprd <- t$GLD - beta*t$GDX
+ ht <- adf.test(sprd, alternative="stationary", k=0) #important. sprd has no timeseries format!!
+
+cat("ADF p-value is", ht$p.value, "n")
+
+# expect p-value = 0.1957. not coint
+
+if (ht$p.value < 0.05) {
+ cat("The spread is likely mean-revertingn")
+ } else {
+ cat("The spread is not mean-reverting.n")
+ }
 
 
 
 
-XXXXXXXXXXXXXX
+
+
+This is a trading competition with an emphasis on the machine learning aspect
 ==========================================================================
+Read and look at the data (irregular 2sec timestamps, stock)
+
+http://www.circulumvite.com/home/trading-competition#!
+
+Below is the copy of the site:
+
+
+
+
+This is a trading competition with an emphasis on the machine learning aspect ( i.e. how best to trade a security, perhaps by predicting a price in the future. ) The intent is to come up with some prediction technique that forecasts the future price of the traded instrument with a view of maximizing trading profits for the elementary strategy and market simulator given to you. We advise you to study simulate_signal.py and figure out the price you need to set in every line to have exactly the trades you intend to have.
+
+
+
+
+
+
+
+
+[ Detailed Description ]        [ Instruction files ]        [ Training Data ]        [ Larger Training Data ]        [ Submission ]        [ What is provided ]
+
+Submission Deadline : MAR-28-2014
+
+
+ 
+
+
+
+Prizes : The total pot is $4,000. Top 5 candidates share the pot in proportion to their Profits. All participants with +ve scores will at least get a t-shirt.
+
+
+ 
+
+
+Please email solutions to data-science-challenge [ at ] domain-name, and please provide a shortname like say "mithrandir" to identify yourself uniquely on the leaderboard.
+
+In case anything is unclear, please check the FAQs on the webpage to see if it is answered there.  If not, please drop us an email at data-science-challenge [ at ] domain-name and we will get back to you.
+
+
+ 
+
+Leaderboard :
+
+
+
+
+ Name
+
+  Affiliation
+
+
+
+ Wouey
+
+ LosAngeles
+
+
+
+ TheIngloriousTrader
+
+ IITK
+
+
+
+ HumbleDebugger
+
+ UPenn
+
+
+
+ WolfOfWallStreet
+
+ IITK
+
+
+
+ Rkites
+
+ IITKGP
+
+
+
+ DarthTrader
+
+ IITKGP
+
+
+
+ RoadToTheAlps
+
+ Switzerland
+
+
+
+ QuantTraders
+
+ Mumbai
+
+
+Updates here
+
+
+ 
+
+
+
+
+FAQs :
+
+Q: What do I have to do again ?!?
+
+A: You have to submit a way to go from an input data file ( like the file 'prod_data_v.txt' included in the Instruction files ) to a file on which 'simulate_signal.py' can operate and print a Profit number. ref: Submission Requirements
+
+
+ 
+
+Q: How and what to submit ?
+
+A: Please email three files { target-price-generator, model, trading-config } to data-science-challenge [ at ] domain-name ref: Submission Requirements
+
+
+ 
+
+Q: What is the submission deadline ?
+
+A: The first round of the competition will be closed on Feb 28th 2014.
+
+
+ 
+
+Q: Do I have to predict a price ? Am I not supposed to maximize profits.
+
+A: You are not at all required to predict the future price. Your solution will only be evaluated based on the profits generated by simulated_signal.py on the data file you generate. We advise you to study simulate_signal.py and figure out the price you need to set in every line to have exactly the trades you intend to have.
+
+
+ 
+
+Q: Can I make new indicators/columns/features using current and past data ?
+
+A: Sure. In generating the target-price at a line you can use any data in your "modelfile" and data in that line and any line before that.
+
+     In generating the target price for say line 5 you can use any data in line 5 and lines 1-4 in the input data file.
+
+     For instance you could fit an AR(n) model and the generator script could use it to compute the target-price with data in lines 5-n to 5, and write it in the 5th line of the output file.
+
+
+ 
+
+Q: Am I expected to provide a program to generate the target price ?
+
+A: Yes. You are expected to provide a program/script/exec and any required model files that when run on data of the same format as in the Training Data generates a file with "target prices" such that, when simulate_signal.py is run with the ss_trading_config.txt you supply, on the target-price-file, the profit ("PNL") is maximized. ref: Submission Requirements
+
+
+ 
+
+Q: What is a model ?
+
+A: Suppose you were to make a ARIMA model on the training data, the constants found which describe the relationship you found, are called a model. You will need them when you are trying to generate a target price from test data.
+
+
+ 
+
+Q: Are there any size constraints of my model file ?
+
+A: For this competition there are no requirements of size on the model. In practice most algorithmic systems are latency sensitive and hence having fast concise models is very much a desired quality.
+
+
+ 
+
+Q: Is the testing data similar to training data set ?
+
+A: We don't know. We have provided you a large training data set as well. 
+
+
+ 
+
+Q: Are the Profit and Trades numbers cumulative in the leaderboard or an average ?
+
+A: They are a sum over the entire Test-Data.
+
+
+ 
+
+Q: If I have the highest score, and the other top four have scores that are half of my score, then how much do I win ?
+
+A: You would win approximately : ( 2/( 2 + 1 + 1 + 1 + 1 ) ) * $4,000 ! 
+
+
+ 
+
+Q: Is this a recruiting contest ?
+
+A: We believe financial engineering is about feature learning and trading algorithm construction. This does have overlaps with our work. Factually it is just a fun competition. To know more about us please visit "What are we working on" .
+
+
+ 
+
+Q: Does my model need to work with generate_target_price.py ?
+
+A: Absolutely not. "generate_target_price.py" is merely an illustrative example. Please write your own program to compute the target price in python/perl/R/octave/ or any other freely available language. In case you learn parameters to your program from training data, please compile it inot a file and submit it with your target price generation exec since the exec will not work otherwise.
+
+
+ 
+
+Q: Can I change ss_trading_config.txt ?
+
+A: You are expected to submit your choice of ss_trading_config.txt. Optimizing this parameter should yield significant improvement in performance. In the instruction files you will find two other choices of trading config provided. Higher values will make the trading more direction or prediction based.
+
+
+
+
+Q: Instead of predicting the price how do I predict a direction ?
+
+A: In real trading you have to decide the price to execute your trades as well. If you want to buy at the offer price and sell at the bid price, you can express that by setting the trading_config parameter to be 0.99 and when you want to buy set the target price to AskPrice+1 and when you want to sell set the target-price to BidPrice-1. There are many other ways this can be done of course. 
+
+
+ 
+
+Q: Can I buy on one day and sell on another day ?
+
+A: If you mean starting a trade and closing it on another day, that is not supported. We assume that trades are closed at the last price of the day.
+
+
+ 
+
+Q: How many times can I submit solutions ?
+
+A: Since the processing of a submission is quite manual, we would advise not more than five solutions a week.
+
+
+ 
+
+Q: Can I submit a solution written in language-X ?
+
+A: In general, if you want to use something freely available under GPL, and which is cross-platform, we should be fine with it. An example of what is not fine : Matlab isn't fine, but Octave works.
+
+
+ 
+
+Q: Are there any marks for readability ?
+
+A: Nope. Profits are the only metric in this contest.
+
+
+ 
+
+Q: Are we allowed to participate in teams ?
+
+A: We feel this competition is best attempted without collaboration.
+
+
+ 
+
+Q: What is the meaning of the given data ?
+
+A: You are given a time-series of the current price of the stock and several indicators that might be useful in predicting the future change in stock price.
+
+
+ 
+
+Q: Is there a "loss function" for the target-price ?
+
+A: No. You might want to come up with the best estimate of fair stock price ( "target-price" ) at each timestamp. What you really should focus on is to find a price series that on the trading-simulator maximizes profits. The reward function is purely profits printed by the simulator. One of the main goals of a data scientist is to apply their knowledge to domains without well behaved loss functions one has studied.
+
+
+ 
+
+Q: Is there a way to use my current position or the past trade-history to set the target price for a line ?
+
+A: This is a very fair criticism, but unfortunately this is not possible right now.
+
+
+ 
+
+Q: Is our aim to use training data files and predict the second column in those files by using past values of other columns ( i.e. columns 7 to end ) ?
+
+A: I would not put it that way. Our basic aim is simply to write a program that given a testing data file, generates an output file with columns 1,3,4,5,6 same as the input data file and column 2 values set for each line according to our strategy for maximizing profits on that day. For generating the value for a line, say 300th line, we can use all data at or before that line, I mean lines 1 to 300. The columns 7 to end are provided in the hope that you find value in the from a perspective of trading, but some or all of them could very well be useless. The training data files are provided for you to build your models or to learn from it if you want to assume that there will be some similarity between testing and training data.
+
+
+ 
+
+Q: Do we have to provide a trading-config file, with a threshold value beyond which we will place trades ?
+
+A: You do have to provide a trading config file. The interpretation of the threshold is that if the targetprice - bidprice < threshold then you don't want to place a bid at that price. Similarly if askprice - targetprice < threshold then placing the ask is profitable enough for you to place a SELL order at the askprice.
+
+
+ 
+
+Q: We have been provided a large number of training files. Are these completely for training and testing our model ?
+
+A: Yes, the training files have zero overlap with files on which your program will be tested. Use them as you please.
+
+
+ 
+
+Q; If I submit the solution ten days from now will I lose out on profits ?
+
+A: The testing data has been frozen and no matter when you submit your solution it will be evaluated on the same dataset. Please submit before the deadline though :)
+
+
+ 
+
+
+
+
+Detailed Description :
+
+In both training data sets, you are given a set of files (each file corresponding to a different date). Each line in the file consists of the L1 data (best bid and ask prices and sizes) of a hypothetical stock at the specified point in time along with the values of a few indicators/predictors at the same point in time.  For further details, please refer to the file README.txt. We have not adjusted the data across dates (for dividends etc.) As such the basic market simulator assumes that you don’t hold positions across days. You should also avoid any comparison of data across dates (for example using returns across days) to avoid getting spurious results. 
+
+
+ 
+
+Your predicted prices would be tested using the simulator on a separate set of test data files.
+
+
+ 
+
+You are already provided a bunch of predictor variable values. In practice, a large amount of work can be put into coming up with relevant predictors. However to keep the scope of the problem manageable, you can take these as given. This way you can focus on how best to predict future prices. Keep in mind that you can choose to use different notions of ‘price’. You are provided L1 data – you can choose to use the mid of the best bid and ask prices; or some weighted combination of the bid and ask. As always, your intent should be to choose something, which maximizes profits. We encourage you to look into follow your intuition into deciding whether to work on making new predictor values or improve trading or improve the combination of predictors.
+
+
+ 
+
+Your predicted prices will be fed into an elementary market simulator.  Again given a predicted price, there can be a lot of complexity in how you go about executing on it. To keep it simple, we use a very basic market simulator and execution algorithm. Keep in mind that a prediction technique which works well for some set of execution algo and market simulator might behave quite badly on a different set, so you need to take that into account. 
+
+
+ 
+
+The particular market simulator and trading strategy that we use is very basic. At any point of time you can either be long one contract or short one contract or flat (holding no positions.) You feed the simulator a threshold value (the only parameter that you are allowed to change in the execution/simulation framework.) If the predicted price is higher (lower) than the best ask (best bid) by that threshold value it will place a market order to buy (sell) as long as it is within its risk limits. If thesignal is not so strong, it can alternately place a limit buy order (sell order) as long as the predicted target price is above the best bid (best ask) by the threshold amount and the strategy is within its risk limits. It always places limit orders at the corresponding L1 price.  Market orders are filled immediately if applicable. Limit orders are filled using a simple heuristic. For simplicity we assume 2 cents commission and no slippage on the trades. 
+
+
+ 
+
+
+
+
+What is provided :
+
+■Data files containing data in a specified format. You can choose to use them as any combination of training/cross-validation data.
+■Market simulator and basic execution framework in simulate_signal.py. You can test your prediction to see how well it works using this script. For example if your output file for a particular date is my_generated_target.txt and your threshold value for placing trades is in ss_trading_config.txt, you can run "simulate_signal.py   my_generated_target.txt   ss_trading_config.txt" to see how it performs.
+■check_for_lookup_error_in_target_price_gen.sh. You need to run your solution by this, to check if you have made any incorrect assumptions, which result in look-ahead bias. Only solutions that have no look-ahead bias will be considered.
+■Some sample solutions have been included in the instruction files. They are optional of course.
+
+
+ 
+
+Submission requirements :
+
+You need to submit
+
+■Your price-prediction program, (for example my_generate_target_price.py) which takes as input the price-indicator-data for a day ( eg, price_data_mmdd.txt ) and any model parameters required by your algorithm, outputs a file with the predicted values in the specified format (please refer to file README.txt) expected by simulate_signal.py
+■ModelFile with the parameters that may be required by your price-prediction program
+■Trading Configuration ( e.g. "ss_trading_config.txt" )
+
+You should provide details about how your program should be run as well as any parameters etc. that it needs. We would love to hear more about your thought process as well. Of course there are no points for that :)
+
+
+ 
+
+For example, 
+
+my_generate_target_price.py my_model.txt price_data_mmdd.txt > my_generated_target.txt
+
+The generated file should satisfy the following requirements
+■Follow the format specified in README.txt
+■Have same number of lines as in price_data_mmdd.txt
+■Apart from second column ( predicted price ), columns 3,4,5,6 on any line should be same as the corresponding columns in the line in price_data_mmdd.txt.
+■Should not have any lookahead ( see third item in ref "What is provided" )
+
+
+ 
 
 
 
@@ -93,163 +585,4 @@ Testing for the mean reversion
  stationary process and is thereby mean-reverting. Research has shown that if the confidence level is
  relaxed, the pairs do not mean-revert good enough to generate satisfactory returns. This implies that a
  very large number of regressions will be run to identify the pairs. If you have 200 stocks, you will have to
- run 19 900 regressions, which makes this quite computer-power and time consuming.
-
-Pairs Trading, Convergence Trading, Cointegration http://www.yats.com/doc/cointegration-en.html
- 4 of 22 19/10/2011 16:15
-
-
-
-
-
-TFX package by Garrett See - FX historical data download - 19Gb
-==========================================================================
-TrueFX provides historical tick data for 15 currency pairs going
- back to May 2009 (http://truefx.com/?page=downloads). There is a script in
- the inst/parser directory of the FinancialInstrument package (
- www.tinyurl.com/DownloadTrueFX) that can be used to download all of that
- data to disk in a format that FinancialInstrument::getSymbols.FI can easily
- read.  Its 19 Gb !  Includes tick data !!
-
-http://www.truefx.com/dev/data/
-
-
-
-Thalesians London: Scalable Financial Computations in Python and R (0) - dec 2013
-==========================================================================
-
-
-http://www.thalesians.com/finance/index.php/Events/Seminars/Seminar111DixonZubair?_escaped_fragment_=#Date_and_Time
-
-Abstract
-
-Python and R combine ease of implementation with depth and breadth of statistical and numerical implementation support infrastructure provided by a growing and open eco-system of library developers. The ease of usage makes it a high productivity tool for modeling and statistical analysis without necessarily having a background in software engineering. However, the semiconductor industry is banking its future on parallel microprocessors due to the inability to deliver steadily increasing processor frequency gains without pushing power dissipation to unsustainable levels. Various vendors provide parallel platform optimized kernels but, at some point, there exists a trade-off between flexibility, performance, portability and dependency on third-party solutions.
-
-Software design patterns grew in popularity amongst quant finance developers in the 90's, partly because they enabled the less experienced programmer to stand on the shoulders of software veterans. However, these patterns give little consideration to the computational building-blocks of financial modeling nor are they particularly suited to supporting rapid development and deployment of financial computations in Python or R on a parallel platform. Following Kurt Keutzer (UC Berkeley Parlab) and Tim Mattson (Intel) and the recent developments by E. Gonina et al. (UC Berkeley Parlab), this talks looks to Our Pattern Language (OPL), a pattern orientated methodology, to distill the primary computations and structural patterns common to financial models and analysis. Through detailed examples of how to effectively map financial computations on multicore CPUs, multicore CPU clusters, GPUs or FPGAs, we demonstrate how OPL can be used to guide the evolution of a software framework for scalable financial computations in Python or R.
-
-Speakers
-
-Matthew Dixon is a Managing Director and Head of Americas at Thalesians Ltd.
-
-He is also a Term Assistant Professor in the MS in Analytics Program at the University of San Francisco and consultant of analytics and financial risk. He has taught computational analytics, data acquisition and financial applications of analytics using R and Python. He is the author of severals papers in high performance computational finance in collaboration with the UC Berkeley EECS Parlab and Old Dominion University CS Department and chairs the Workshop on High Performance Computational Finance at SC. He has held visiting professorship and postdoctoral research appointments in computational and applied mathematics at UC Davis and Stanford University.
-
-Dr. Dixon began his career as a quantitative developer in the structured credit trading group at Lehman Brothers in London before pursuing academics and consulting in the finance and IT industry for many years. One of his most recent projects included consulting for the private equity firm Silver Lake to develop predictive analytics for identifying investment opportunities. He holds a Ph.D. in Applied Mathematics from Imperial College in London and a MSc in Parallel and Scientific Computation (with distinction) from the University of Reading.
-
-Mohammad Zubair is a Professor in the Computer Science Department at Old Dominion University. Prof. Zubair has more than twenty years of research experience in the area of experimental computer science and engineering both at the university as well as in industry. His primary area of interest is high performance computing and management of large information.
-
-His major industrial assignment was at the IBM T.J. Watson Research center for three years, where his research focus was in high performance computing and some of his work was integrated into IBM products. His current interests are in developing high performance algorithms for multi-core architectures such as GPUs and Intel Multi-core systems. He has been successful in obtaining funds to support his research work from NASA, NSF, DTIC, ARPA, Jefferson Laboratory, Los Alamos, AFRL, NRL, JTASC, Sun Microsystems, and IBM Corporation.
-
-Resources
-■M. Dixon, S. Khan and M. Zubair, Accelerating Option Risk Analytics in R using GPUs, November 2013.
-■M. Dixon and M. Zubair, Calibration of Stochastic Volatility Models on a Multi-Core CPU Cluster, ACM Proceedings of WHPCF13: Sixth Workshop on High Performance Computational Finance, SC13, November 2013.
-■M. Dixon, J. Chong and K. Keutzer, Accelerating Value-at-Risk Estimation on Many-Core and Multi-Core Architectures, The Journal of Concurrency and Computation: Practice and Experience, Vol. 24, No. 8, Wiley, 2011.
-■K. Keutzer and T. G. Mattson, Introduction to Design Patterns for Parallel Computing, Chapter 8, The Berkeley Par Lab: Progress in the Parallel Computing Landscape, eds. D. Patterson, D. Gannon and M. Wrinn, 2013.
-
-
-
-Link to papers.nips.cc and december 2013 conference
-==========================================================================
-
-Neural Information Processing Systems
-
-http://papers.nips.cc
-
-December 2013 conference highlights (according to http://www.machinedlearnings.com  and the http://fastML.com guy)
- http://nips.cc/Conferences/2013/Program/event.php?ID=3783
-
-Covariance matrices were hot, and not just for PCA. The BIG & QUIC algorithm
- of Hseih et. al. for estimating large sparse inverse covariance matrices was technically
- very impressive and should prove useful for causal modeling of biological and
- neurological systems (presumably some hedge funds will also take interest).
- http://nips.cc/Conferences/2013/Program/event.php?ID=4086  (Me: is this like sparse filtering ?)
-
-
-
-Synthetic Biology & Open Source Tools
-==========================================================================
-
-http://biocurious.org
-
-http://www.backyardbrains.com/
-
-http://lavaamp.wordpress.com/
-
-http://openpcr.org/
-
-http://www.pearlbiotech.com/
-
-iGEMs ??
-
-http://openwetware.org/
-
-
-
-Multivariate Direct Filtering (Adaptive) - example on ESTX50 5 min intraday
-==========================================================================
-Realtime signal extraction .... and trading.
-
-Could be interesting, since relatively easy to implement with out intraday framework, using 5-15 inute bars ....
-
-http://imetricablog.com/2013/03/10/high-frequency-financial-trading-on-index-futures-with-mdfa-and-r-an-example-with-euro-stoxx50/
-
-In general MDFA seems to have been pioneered by Marc Wilidi (CH) .....
-
-
-
-
-get these: Time-Series Forecasting Using Pre-trained Deep Neural Networks
-==========================================================================
-
-
-http://link.springer.com/chapter/10.1007%2F978-3-642-40728-4_57
-
-http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=6033368&url=http%3A%2F%2Fieeexplore.ieee.org%2Fxpls%2Fabs_all.jsp%3Farnumber%3D6033368
-
-http://rd.springer.com/chapter/10.1007%2F978-3-642-31837-5_3
-
-http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=6272913&url=http%3A%2F%2Fieeexplore.ieee.org%2Fstamp%2Fstamp.jsp%3Ftp%3D%26arnumber%3D6272913
-
-Author of the above:
-
-http://im.sysu.edu.cn/Teachers.asp?ObjID=4&TeacherID=107
-
-[1]Cai Xianggao, Su Hu, and Xiaola Lin. Feature extraction using Restricted
- Boltzmann Machine for stock price prediction (C). // Computer Science and
- Automation Engineering (CSAE). Zhangjiajie: IEEE Press, 2012. 80-83
- [2]Cai
- Xianggao, Xiaola Lin. Forecasting High Dimensional Volatility Using Conditional
- Restricted Boltzmann Machine on GPU (C). // Parallel and Distributed Processing
- Symposium Workshops & PhD Forum (IPDPSW). Shanghai: IEEE Press, 2012.
- 1979-1986
- [3]Cai Xianggao, et al. GPU-Accelerated Restricted Boltzmann
- Machine for Collaborative Filtering (C). // Algorithms and Architectures for
- Parallel Processing. Fukuoka: Springer, 2012. 303-316.
- [4]Zuo Yinbo, Cai
- Xianggao, Xiaola Lin. A Low Delay Multi-source Multicast Algorithm for Ad hoc
- Networks(C). //The 6th Joint IFIP Wireless and Mobile Networking Conference.
- Dubai: IEEE Press, 2013.
- [5]Cai Xianggao, Guoming Lai, and Xiaola Lin.
- Forecasting large scale conditional volatility and covariance using neural
- network on GPU〔J〕. The Journal of Supercomputing, 2013, 63(2): 490-507.
-
-The above uses CRBMs (Conditional Restricted Boltzmann Machines) which is an extension of RBMs that uses historical data, so it is sensitive to time and lagged inputs! A Theano(Python) implementation can be found here: https://gist.github.com/gwtaylor/2505670.  http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/code.html. It seems that a CRBM can be used with either binary or gaussian variables see code for matlab:
- http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/mhmublv_code.zip
- http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/data.mat
-
- 
-
-Maybe use convolutional networks (makes use of GPU acceleration)  http://fastml.com/object-recognition-in-images-with-cuda-convnet/
-
-http://cs229.stanford.edu/proj2012/LaiLiPong-ForecastingTradeDirectionandSizeOfFutureContractsUsingDeepBeliefNetwork.pdf
-
- 
-
-
-
-fc snapshot on stock universe
-==========================================================================
-U:= DAX stock universe
-
-Step 1) [CLUSTERING] Cluster U into N<50 clusters {C_1,..,C_N} based on the historical daily log returns (Cl-to-Cl) [Reason: we can currently only request <50 snapshot symbols.]
-
-Step 2) [PREDICTOR SELECTION] For 
+ run 19 900 regressions, which makes this quite computer-power and time consu
