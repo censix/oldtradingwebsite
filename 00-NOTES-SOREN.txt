@@ -1,5 +1,20 @@
 
 
+
+
+Multivariate Direct Filtering (Adaptive) - example on ESTX50 5 min intraday
+==========================================================================
+Realtime signal extraction .... and trading.
+
+Could be interesting, since relatively easy to implement with out intraday framework, using 5-15 inute bars ....
+
+http://imetricablog.com/2013/03/10/high-frequency-financial-trading-on-index-futures-with-mdfa-and-r-an-example-with-euro-stoxx50/
+
+In general MDFA seems to have been pioneered by Marc Wilidi (CH) .....
+
+
+
+
 get these: Time-Series Forecasting Using Pre-trained Deep Neural Networks
 ==========================================================================
 
@@ -55,27 +70,4 @@ U:= DAX stock universe
 
 Step 1) [CLUSTERING] Cluster U into N<50 clusters {C_1,..,C_N} based on the historical daily log returns (Cl-to-Cl) [Reason: we can currently only request <50 snapshot symbols.]
 
-Step 2) [PREDICTOR SELECTION] For each stock in U, find the best 1<=K(~3)<=5 single predictors for the chosen target, i.e. Cl-to-Hi.
-■Option A) do this using robust regression significance
-■Option B) do this using 'Boruta' (regression)
-
- 
-
-The base predictors are the chosen cluster representatives {c_1,..,c_N} and for each we either use (Cl-to-Cl, Op-to-Op, Hi-to-Hi, Lo-to-Lo)   or  (Cl-to-Cl, Cl-to-Hi), whatever works better for the given target.
-
-Step 3) [MODELING] For each stock in U, we now have K predictors {p_1,..,p_K}
-■Option A) Fit a robust regression model
-■Option B) Fit a nnet model
-■Option C) Calculate SF features and their optimal number {p_sf1,...,p_sfK1} then select K2 best predictor features with 'Boruta' then fit best model (linreg, or nnet ?)
-
- 
-
-
-
-Brokertron - Amazon Instances with IB-gateway & Cache
-==========================================================================
-brokertron.com
-
-(Castedo Ellerman)
-
-If we ever want to move everything to the amazon cloud, this should be given consideration. Might be more secure and stable than own IBGWS setup.
+Step 2) [PREDICTOR SELECTION] For 
