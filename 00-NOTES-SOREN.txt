@@ -2,6 +2,177 @@ XXXXXXXXXXXXXX
 ==========================================================================
 
 
+XXXXXXXXXXXXXX
+==========================================================================
+
+
+Finding relationships between assets that can be used for statistical arbitrage
+==========================================================================
+Instead of focusing on predicting price direction and price volatility with nonlinear models derived with machine learning methods, an alternative would be to try and discover exploitable price relationships between assets of the same class and react (=trade) when mispricing happens, in other words, do statistical arbitrage. In a sense this is somehow 'easier' than attempting to forecast prices, since the only thing one has to do is to find a relatively stable, linear or non-linear relationship between a group of at least two assets and assume that, from the time of its detection, that relationship will carry on for some time into the future. Trading under this assumption is then very much a reactive process that is triggered by price movements that diverge significantly from the modeled relationship. Traditional Pair Trading and trading of assetts in a VECM (Vector Error Correction Model) relationship are good examples for statarb using linear models. So why not use a simple one-layer neural network or even an RBM to discover a non-linear price relationship between two not-cointegrated assets and if this discovery process is successful, trade it in a similar way to a classical pair ? Things become even more interesting when groups with more than just two assets are considered. This would then be the non-linear equivalent of a VECM.
+
+
+
+
+statarb and machine learning
+==========================================================================
+statarb basics:  We don't try to predict anything. We react to significant mispricing.
+
+ 
+
+# let Xt be a stationary mean-reverting process, e.g. the residuals
+ # between an index (ETF) and a *combination of the underlying stocks*.
+ # i.e. We already have successfully tested Xt with the Advanced Dickey-Fuller test!
+ # Machine learning techniques, such as clustering, could be used to find an appropriate # *combination of the underlying stocks* so that the residuals are indeed reverting.
+
+#Xt <- runif(101)
+ Xt <- (runif(200)+0.7)*sin(pi/10*1:200)
+
+# check mean-reversion: need p.value < 0.01
+ require(tseries)
+ adf.test(as.numeric(Xt))
+
+# fit an ar(1) model to get a and b
+ fit <- arima(Xt,c(1,0,0))
+
+a <- fit$coef['intercept']
+ b <- fit$coef['ar1']
+
+# Now get the Ornstein-Uhlenbeck params for the MR process from a and b
+ delta.t <- 1/length(as.numeric(Xt))  #number of datapoints
+ kappa.ou <-  -log(b)/delta.t
+ m.ou     <- a/(1-b)
+ sigma.ou <- sqrt( var(fit$residuals)*2*kappa.ou / (1-b*b) )
+ sigmaeq.ou <- sqrt( var(fit$residuals) / (1-b*b) )
+
+# now define signal
+
+signal <- (Xt - m.ou) / sigmaeq.ou
+
+# signal < -1.25 : buy ETF
+ # signal > -0.5  : close long position ETF
+
+# signal > 1.25 : sell ETF
+ # signal < 0.5  : close short position ETF
+
+###############################
+ Or more in general:  Discover target assetts for statarb by using directed graphs where edges represent information transfer (either granger or transfer entropy) between assets. Find assets that have more incoming than outgoing egdes (followers). For one such target assett T, identify all assets S_i that connect directly through an incoming edge (S_i -> T) with T. Then construct a consensus model COMO using all the S_i and check if T - COMO(S_i) is mean reverting, using an adf.test.  If this is the case (p<0.01) then estimate the the ornstein-uhlenbeck parameters of Xt := T - COMO(S_i) and trade T as described above !!
+
+
+
+
+KODAMA - try it sometime
+==========================================================================
+http://www.kodama-project.com/tutorial.html
+
+
+
+Monitor this - Reconstruct the wiring between neurons from fluorescence imaging of neural activity 
+==========================================================================
+Construct a directed graph (network connections for N neurons) from N timeseries of fluorescence activation for each neuron.
+
+http://www.kaggle.com/c/connectomics/data
+
+This is exactly(!) what we should do for stocks or better for the 15 currency pairs that we just downloaded from TrueFX!!!!
+
+The directed graph network then represents the *temporal* causal relationships between stocks or better currency pairs. This does not require high temporal resolution to identify actual lead-lag relationships since the time between flourescence measurements (20ms) is much larger than the actual neuronal signal propagation time. But despite this, amazingly engough, we can derive the network connections !!!
+
+https://sites.google.com/a/chalearn.org/connectomics/help/sample-code
+
+matlab and c++ sample code.  Interesting: Transfer Entropy (TE) is more general than corr + granger + mutual_inf
+
+https://github.com/dherkova/TE-Causality/tree/connectomics_challenge
+
+There is also code for calculating pairwise Transfer Entropy in R but needs optimization
+
+Ideas for what could be used as 'activity' for a financial instrument == neuron:
+1.Squared Return (daily)
+2.Volume (daily)
+3.Volatility (daily) derived from OHLC [package:TTR, function: volatility, parameters: Yang and Zhang (calc="yang.zhang") ]
+4.Sum of absolute returns==price path length (needs intraday data)
+5.A combination of 1,2 and 3.
+
+How to use this:   (use the R 'igraph' package):
+
+... Identify individual Influencers and Followers based on incoming/outgoing connections. Having a set of influencers could serve as basis for the given assett universe. Only influencers are needed for forecasting all the other assetts !
+
+... identify communities (see. igraph) of Influencers and Followers
+
+Application in Finance: !!
+
+Using transfer entropy to measure information
+
+flows between financial markets
+
+Thomas Dimpfl
+
+Franziska J. Peter
+
+August 23, 2012
+
+http://sfb649.wiwi.hu-berlin.de/papers/pdf/SFB649DP2012-051.pdf
+
+Uses returns and discretizes them into three bins i.e. 5%/95% quantiles
+
+Note:
+
+Barnett L, Barrett A, Seth A (2009). \Granger Causality and Transfer Entropy Are Equivalent
+
+for Gaussian Variable." Physical Review Letters,103, 238701.
+
+
+
+
+CRAN package 'FIAR'
+
+
+
+
+Ready to go: (assuming normality)
+
+do Granger Causality (on GPU, package: gputools) (with lag >=1 ) and then construct directed graph using package:igraph. Note that only datapoints within the lag history of x_t0 and y_t0 will be used to assess causality x->y !
+ 
+
+The *directed* graph could then be used to identify much better (cluster) representatives than the correlation based  *undirected* clustering and representative selection.
+
+To see if a given transfer entropy TE_xy (x->y) is significant:
+ http://stats.stackexchange.com/questions/31506/significance-of-transfer-entropy-calculations
+
+use bootstrapping: produce time randomized versions of x, get the distr of TE values, get its mean and sd and assess whether TE_xy is far enough away from mean.
+
+
+
+
+
+16Gb RAM - cost comparison - hw requirements
+==========================================================================
+cost:
+
+0) newmainboard with 32 Gb:  need new processor :((
+
+need other processor :((
+
+mainboard                       166 eur http://www.amazon.de/Z87-PRO-Mainboard-Sockel-Intel-Speicher/dp/B00CXK57KS/ref=pd_sim_computers_7?ie=UTF8&refRID=0PY0K0Y3W2Q9D4X91QNM
+
+4x8=32Gb SDRAM-DDR3   290 eur http://www.amazon.de/Corsair-Vengeance-Schwarz-Arbeitsspeicher-CML32GX3M4A1866C10/dp/B00B147JIA/ref=sr_1_1?s=computers&ie=UTF8&qid=1395393319&sr=1-1&keywords=mainboard+ddr3++32Gb
+
+ 
+
+ 
+
+1) newmainboard with 16Gb: 210 eur   <===== do this !!!!!
+
+ddr3 mainboard 775 sockel  75 eur http://www.amazon.de/ASUS-P5P41T-Mainboard-Sockel-Speicher/dp/B002T4P1BI/ref=sr_1_4?s=computers&ie=UTF8&qid=1395394206&sr=1-4&keywords=mainboard+ddr3+775
+
+2x8=16Gb SDRAM-DDR3   140 eur http://www.amazon.de/Corsair-Vengeance-Desktop-Arbeitsspeicher-CMZ8GX3M1A1600C10B/dp/B009M0TCBC/ref=pd_rhf_pe_s_cp_5_SWP2?ie=UTF8&refRID=0HTRMT4VWK4MD4QWM5Q5
+
+ 
+
+ 
+2) old mainboard with 8Gb:  150 eur
+
+old mainbaord:      0 2x4Gb=8Gb RAM ddr2:  146 eur
+
+
 
 CRAN package 'orderbook' - use with BTC  on atlasats ??
 ==========================================================================
