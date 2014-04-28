@@ -2,8 +2,72 @@ XXXXXXXXXXXXXX
 ==========================================================================
 
 
+
 XXXXXXXXXXXXXX
 ==========================================================================
+
+
+
+XXXXXXXXXXXXXX
+==========================================================================
+
+
+
+Nervana Wants to Make Special Hardware Just for Deep Learning  - April 17, 2014
+==========================================================================
+Interesting.... (epiphany?)
+
+http://recode.net/2014/04/17/nervana-wants-to-make-special-hardware-just-for-deep-learning/
+
+Deep learning, the current belle of the artificial-intelligence ball, has helped products like speech recognition and image search, from companies like Google, Microsoft and Facebook, make great leaps forward in recent years. It’s an older technique that was enlivened by massive quantities of data.
+
+A new San Diego-based startup called Nervana Systems wants to make deep learning more accessible by developing custom hardware built to process all that data.
+
+To design the hardware, it has collected a seed round of $600,000 in funding from a group of Silicon Valley investors who are primarily associated with Internet companies, not chips. They are Ali and Hadi Partovi, Sam Altman, Geoff Ralston, Scott Banister, Owen Van Natta, Eric Baker, Farzad Khosrowshahi, Dara Khosrowshahi, Allen & Company, Aditya Agarwal and Ruchi Sanghvi, and SV Angel.
+
+Nervana CEO Naveen Rao said that should be enough money for the company’s small team — which previously worked at Qualcomm and only started Nervana in March — to create a demo version.
+
+It’s too far out to nail things down, but the product should be priced in the tens of thousands of dollars, Rao said.
+
+“We’re running out of juice already when it comes to silicon,” Rao said. “Silicon has hit a wall. The only way to do it better is novel architectures.”
+
+Here’s how Rao described Nervana’s solution: Deep learning is generally conducted on graphic processing units (GPUs) rather than general-purpose central processing units (CPUs) because GPUs are designed to handle parallel processes. But since data structures live in the memory, they tend to be moved back and forth as they are processed. That generates a lot of overhead. Nervana’s solution moves things back and forth less, because the state of the algorithm resides on the chip, rather than in the memory.
+
+The real opportunity of Nervana is that by making deep learning more accessible, it will hopefully help researchers and companies make more interesting breakthroughs in artificial intelligence, said Ali Partovi, who helped assemble the investor group. Partovi and his brother Hadi knew about Nervana early on because CTO Amir Khosrowshahi is their cousin.
+
+As Ali Partovi put it, today’s deep learning breakthroughs have been in things like computers training themselves to recognize cats in videos and make fewer speech recognition errors — things a human 4-year-old could easily do.
+
+What would be more impressive to laypeople might be breakthroughs in areas like processing weather data, satellite photos and surveillance video — things people have more trouble doing with their own brains.
+
+
+
+http://fastml.com/deep-learning-these-days/
+==========================================================================
+http://fastml.com/deep-learning-these-days/
+
+But it is not so clear that ReLU + Dropout  really are better ... see this
+
+http://www.reddit.com/r/MachineLearning/comments/22u1yt/is_deep_learning_basically_just_neural_networks/cgqgy9w
+
+
+
+
+SciDB - if we ever need a DB for R (should datasets not fit into memory anymore)
+==========================================================================
+if we ever need a DB for R (should datasets not fit into memory anymore), then forget about Hadoop and all the other fancy names supposedly BigData... use SciDB.  It was made for R and integrates nicely and apparently makes complex computations (correlation, etc.) possible without having to copy data back and forth from DB to R.
+
+Article:
+ http://www.datanami.com/datanami/2014-04-09/array_databases:_the_next_big_thing_in_data_analytics_.html
+
+Download:
+ http://www.scidb.org/forum/viewtopic.php?f=16&t=364/
+
+R package for SciDB (nice integration)
+ https://github.com/Paradigm4/SciDBR
+
+ 
+
+
 
 
 Finding relationships between assets that can be used for statistical arbitrage
@@ -55,504 +119,4 @@ signal <- (Xt - m.ou) / sigmaeq.ou
  # signal < 0.5  : close short position ETF
 
 ###############################
- Or more in general:  Discover target assetts for statarb by using directed graphs where edges represent information transfer (either granger or transfer entropy) between assets. Find assets that have more incoming than outgoing egdes (followers). For one such target assett T, identify all assets S_i that connect directly through an incoming edge (S_i -> T) with T. Then construct a consensus model COMO using all the S_i and check if T - COMO(S_i) is mean reverting, using an adf.test.  If this is the case (p<0.01) then estimate the the ornstein-uhlenbeck parameters of Xt := T - COMO(S_i) and trade T as described above !!
-
-
-
-
-KODAMA - try it sometime
-==========================================================================
-http://www.kodama-project.com/tutorial.html
-
-
-
-Monitor this - Reconstruct the wiring between neurons from fluorescence imaging of neural activity 
-==========================================================================
-Construct a directed graph (network connections for N neurons) from N timeseries of fluorescence activation for each neuron.
-
-http://www.kaggle.com/c/connectomics/data
-
-This is exactly(!) what we should do for stocks or better for the 15 currency pairs that we just downloaded from TrueFX!!!!
-
-The directed graph network then represents the *temporal* causal relationships between stocks or better currency pairs. This does not require high temporal resolution to identify actual lead-lag relationships since the time between flourescence measurements (20ms) is much larger than the actual neuronal signal propagation time. But despite this, amazingly engough, we can derive the network connections !!!
-
-https://sites.google.com/a/chalearn.org/connectomics/help/sample-code
-
-matlab and c++ sample code.  Interesting: Transfer Entropy (TE) is more general than corr + granger + mutual_inf
-
-https://github.com/dherkova/TE-Causality/tree/connectomics_challenge
-
-There is also code for calculating pairwise Transfer Entropy in R but needs optimization
-
-Ideas for what could be used as 'activity' for a financial instrument == neuron:
-1.Squared Return (daily)
-2.Volume (daily)
-3.Volatility (daily) derived from OHLC [package:TTR, function: volatility, parameters: Yang and Zhang (calc="yang.zhang") ]
-4.Sum of absolute returns==price path length (needs intraday data)
-5.A combination of 1,2 and 3.
-
-How to use this:   (use the R 'igraph' package):
-
-... Identify individual Influencers and Followers based on incoming/outgoing connections. Having a set of influencers could serve as basis for the given assett universe. Only influencers are needed for forecasting all the other assetts !
-
-... identify communities (see. igraph) of Influencers and Followers
-
-Application in Finance: !!
-
-Using transfer entropy to measure information
-
-flows between financial markets
-
-Thomas Dimpfl
-
-Franziska J. Peter
-
-August 23, 2012
-
-http://sfb649.wiwi.hu-berlin.de/papers/pdf/SFB649DP2012-051.pdf
-
-Uses returns and discretizes them into three bins i.e. 5%/95% quantiles
-
-Note:
-
-Barnett L, Barrett A, Seth A (2009). \Granger Causality and Transfer Entropy Are Equivalent
-
-for Gaussian Variable." Physical Review Letters,103, 238701.
-
-
-
-
-CRAN package 'FIAR'
-
-
-
-
-Ready to go: (assuming normality)
-
-do Granger Causality (on GPU, package: gputools) (with lag >=1 ) and then construct directed graph using package:igraph. Note that only datapoints within the lag history of x_t0 and y_t0 will be used to assess causality x->y !
- 
-
-The *directed* graph could then be used to identify much better (cluster) representatives than the correlation based  *undirected* clustering and representative selection.
-
-To see if a given transfer entropy TE_xy (x->y) is significant:
- http://stats.stackexchange.com/questions/31506/significance-of-transfer-entropy-calculations
-
-use bootstrapping: produce time randomized versions of x, get the distr of TE values, get its mean and sd and assess whether TE_xy is far enough away from mean.
-
-
-
-
-
-16Gb RAM - cost comparison - hw requirements
-==========================================================================
-cost:
-
-0) newmainboard with 32 Gb:  need new processor :((
-
-need other processor :((
-
-mainboard                       166 eur http://www.amazon.de/Z87-PRO-Mainboard-Sockel-Intel-Speicher/dp/B00CXK57KS/ref=pd_sim_computers_7?ie=UTF8&refRID=0PY0K0Y3W2Q9D4X91QNM
-
-4x8=32Gb SDRAM-DDR3   290 eur http://www.amazon.de/Corsair-Vengeance-Schwarz-Arbeitsspeicher-CML32GX3M4A1866C10/dp/B00B147JIA/ref=sr_1_1?s=computers&ie=UTF8&qid=1395393319&sr=1-1&keywords=mainboard+ddr3++32Gb
-
- 
-
- 
-
-1) newmainboard with 16Gb: 210 eur   <===== do this !!!!!
-
-ddr3 mainboard 775 sockel  75 eur http://www.amazon.de/ASUS-P5P41T-Mainboard-Sockel-Speicher/dp/B002T4P1BI/ref=sr_1_4?s=computers&ie=UTF8&qid=1395394206&sr=1-4&keywords=mainboard+ddr3+775
-
-2x8=16Gb SDRAM-DDR3   140 eur http://www.amazon.de/Corsair-Vengeance-Desktop-Arbeitsspeicher-CMZ8GX3M1A1600C10B/dp/B009M0TCBC/ref=pd_rhf_pe_s_cp_5_SWP2?ie=UTF8&refRID=0HTRMT4VWK4MD4QWM5Q5
-
- 
-
- 
-2) old mainboard with 8Gb:  150 eur
-
-old mainbaord:      0 2x4Gb=8Gb RAM ddr2:  146 eur
-
-
-
-CRAN package 'orderbook' - use with BTC  on atlasats ??
-==========================================================================
-http://cran.r-project.org/web/packages/orderbook/index.html
-
-
-Rationale for adding classic indicators - RSI, MACD, etc.. as features
-==========================================================================
-Essentially all machine learning is trying to do is to detect patterns in market behaviour that is generated by *human* actors and some machine actors. The fact that the classical indicators (RSI, MACD, etc.) with their default settings are still very much in use by human traders makes it worthwhile to consider to add them as features to whatever other features we have derived by unsupervised learning! Obviously in a rolling fashion.
-
-
-
-Learning To Trade the Market Maker business model 
-==========================================================================
-http://www.youtube.com/watch?v=INe0NL08QEc
-
- 
-
-Define the minimum spread that we need to maintain profitability for the Assett. (i.e. BTCEUR or BTCUSD)
-
-As long as the actual spread is larger than our minimum spread, we place LMT orders on the top of the book ==> we will take all the market and all the limit orders that come in, as long as the size of the order is lower than the one we placed.
-
-Challenge1:  Ensure that we are always at the top of the order_book !!
-
-Challenge2:  How deep do our pockets need to be ?
-
-Challenge3:  Is there a closing time  and if yes, is it too risky to be in the market just before              closing time. ?
-
- 
-
-
-
-
-
-Articles - RBMs in financial forecasting
-==========================================================================
-http://censix.com/wdps/wp-content/uploads/2014/02/RBMs-in-financial-forecasting.pdf
-
-
-
-
-matlab deeplearning toolbox
-==========================================================================
-https://github.com/rasmusbergpalm/DeepLearnToolbox
-
-http://www.mathworks.com/matlabcentral/fileexchange/38310-deep-learning-toolbox
-
-
-
-
-HiPLARb - great GPU libs for R - transparent!! use for SparseFiltering
-==========================================================================
-http://www.hiplar.org/     (https://developer.nvidia.com/hiplar)
-
-Try installing this CRAN package. May make things easier. Optimizes use of GPU-multicores for each setup. overloads the default matmul operator %*%
- http://www.cran.r-project.org/web/packages/HiPLARM/index.html
-
-The next example is a simple matrix multiplication. Again the user will see no difference between using HiPLARb and standard R.
-
-
-A <- matrix(rnorm(4096 * 4096), nrow=4096, ncol=4096)
-B <- matrix(rnorm(4096 * 4096), nrow=4096, ncol=4096)
- system.time(C <- A %*% B) # single core matrix multiplication
-#   user  system elapsed 
-# 10.760   0.032  10.801 
-library(HiPLARb)
-A <- matrix(rnorm(4096 * 4096), nrow=4096, ncol=4096)
-B <- matrix(rnorm(4096 * 4096), nrow=4096, ncol=4096)
-system.time(C <- A %*% B) #multiplication with HiPLARb
-# user  system elapsed 
-#  0.648   0.048   0.696
-This would be ideal for the SparseFiltering implementation !!!!!
-
-http://www.hiplar.org/downloads/HiPLARb_0.1.1.tar.gz
-
-HiPLARb requires a minor patch to the R 2.15.2 source :((
-
-
-
-
-mindboggingly simple gap trading strategy - maybe run a backtest sometime
-==========================================================================
-■Consider a list of 100 securities (the Nasdaq 100, I think)
-■Using a 30-day trailing window, compute the difference (gap) between the daily opening price and the prior daily closing price
-■Normalize the gap using a z-score
-■Each day, identify the pair of stocks corresponding to the min and max gap z-scores
-■Buy the stock with the min gap z-score, and short the stock with the max gap z-score
-■After 3 pm, close open positions
-
-https://www.quantopian.com/posts/market-closed-gap-trade
-
-
-
-Using foreign C libraries (without compilation) in R
-==========================================================================
-
-http://cran.r-project.org/web/packages/rdyncall/index.html
-
-No compilation is required, just the .so file has to be provided, but calling functions and passing arguments becomes painful .....
-
-
-
-
-
-
-Read numpy data into R (binary)
-==========================================================================
-http://dirk.eddelbuettel.com/blog/2012/06/30/
-
-# Create demo numpy  data:
-#!/usr/bin/env python
-#
-# simple example for creating numpy data to demonstrate converter
-
-import numpy as np
-
-# simple float array
-a = np.arange(15).reshape(3,5) * 1.1
-
-outfile = "/tmp/data.npy"
-np.save(outfile, a)
-# use python to write special .bin file
-#!/usr/bin/python
-#
-# read a numpy file, and write a simple binary file containing
-#   two integers 'n' and 'k' for rows and columns
-#   n times k floats with the actual matrix
-# which can be read by any application or language that can read binary
-
-import struct
-import numpy as np
-
-inputfile = "/tmp/data.npy"
-outputfile = "/tmp/data.bin"
-
-# load from the file
-mat = np.load(inputfile)
-
-# create a binary file
-binfile = file(outputfile, 'wb')
-# and write out two integers with the row and column dimension
-header = struct.pack('2I', mat.shape[0], mat.shape[1])
-binfile.write(header)
-# then loop over columns and write each
-for i in range(mat.shape[1]):
-    data = struct.pack('%id' % mat.shape[0], *mat[:,i])
-    binfile.write(data)
-binfile.close()
-# Read it into R !
-#!/usr/bin/r
-
-infile <- "/tmp/data.bin"
-con <- file(infile, "rb")
-dim <- readBin(con, "integer", 2)
-Mat <- matrix( readBin(con, "numeric", prod(dim)), dim[1], dim[2])
-close(con)
-
-print(Mat)
-
-
-
-
-
-DAX Liquidity Shock 7 feb 2014 - zwischen 14:25 und 14:45 ??
-==========================================================================
-DAX Liquidity Shock 7 feb 2014 - zwischen 14:25 und 14:45 ??
-
-von 9270 auf 9230 und zurueck auf 9260 ....
-
-
-
-
-Stacked Denoising Autoencoders - Implementation for Theano
-==========================================================================
- 
-http://deeplearning.net/tutorial/SdA.html
-
-Critical metaparameters to tune = number of autoencoders per layer and number of layers !!!
-
-Theano code:
- http://deeplearning.net/tutorial/code/SdA.py
-
-Or better: use pylearn2 (built on theano)
-
-https://github.com/lisa-lab/pylearn2
-
-look at
- pylearn2 / pylearn2 / models / autoencoder.py
- for implementation of stacked denoising autoencoders.
-
-
-
-
-
-Amazing R tools from Duncan Temple Lang (RCUDA, RLLVM, ... RDropbox)
-==========================================================================
-The Father of http://omegahat.org has a git repository ....
-
-https://github.com/duncantl?tab=repositories
-
-
-
-
-
-rPython installation - purpose - use Theano (deeplearning) from R
-==========================================================================
-install rPython from CRAN
- =====================
- install.packages('rPython')
- # from R do
-
-require(rPython)
- python.load('checkGPUuse.py')
- #works !!!
- #python.get('vlen')
-
-# NOT SO GOOD :((  some python objects may not be JSON serializable and cannot be returned to
- # R, which ones ? what would the R  list() in python be ?
-
- 
-
-######## checkGPUuse.py
-from theano import function, config, shared, sandbox
-import theano.tensor as T
-import numpy
-import time
-
-vlen = 10 * 30 * 768  # 10 x #cores x # threads per core
-iters = 1000
-
-rng = numpy.random.RandomState(22)
-x = shared(numpy.asarray(rng.rand(vlen), config.floatX))
-f = function([], T.exp(x))
-print f.maker.fgraph.toposort()
-t0 = time.time()
-for i in xrange(iters):
-    r = f()
-t1 = time.time()
-print 'Looping %d times took' % iters, t1 - t0, 'seconds'
-print 'Result is', r
-if numpy.any([isinstance(x.op, T.Elemwise) for x in f.maker.fgraph.toposort()]):
-    print 'Used the cpu'
-else:
-    print 'Used the gpu'
-    
-    
-
-
-pairs (classic): raw prices + adf test
-==========================================================================
-require(quantmod)
- A <- getSymbols('GLD',auto.assign=FALSE)
- B <- getSymbols('GDX',auto.assign=FALSE)
- #C <- getSymbols('AAPL',auto.assign=FALSE)
-
-##################################################
- ############### CLASSIC ###################################
- ##################################################
-
-# beta: price
- al <- Ad(A)
- bl <- Ad(B)
- colnames(al) <- 'A'
- colnames(bl) <- 'B'
- require(MASS)
- beta.calc <- rollapply(data=cbind(al,bl),width=40,by=1,by.column = FALSE,
- function(z){
- #c(nrow(z),ncol(z))
- fit <- rlm(A~B+0,data=as.data.frame(z))
- as.numeric(fit$coef)
- }, align = "right")
-
-plot(beta.calc)
-
-# mr.test.adf
- require(tseries)
- al <- Ad(A)
- bl <- Ad(B)
- test.in <- na.omit(cbind(beta.calc,al,bl))
- colnames(test.in) <- c('beta','A','B')
- mr.test.adf <- rollapply(data=test.in,width=40,by=1,by.column = FALSE,
- function(z){
- #return(c(nrow(z),ncol(z)))
- #return(as.numeric(c(last(z$A),last(z$beta),last(z$B))))
- spread <- as.data.frame(z$A - z$beta*z$B)
- #as.numeric(last(spread))
- tt <- adf.test(x=spread$A, alternative = "stationary", k=0)
- as.numeric(tt$p.value)
- }, align = "right")
-
-plot(mr.test.adf)
- # percentage of days where the spread is mr with <0.05 significance
- sum(mr.test.adf<0.05,na.rm=TRUE)/nrow(mr.test.adf)
-
-# PENDING. how long will a fitted model (spread) stay valid with the
- # same parameters. or in other words, how often do we have to refit ?
-
- 
-
-#~ # inspired by
- #~ # http://epchan.blogspot.ch/2013/11/cointegration-trading-with-log-prices.html
- #~ require(quantmod)
- #~ A <- getSymbols('YHOO',auto.assign=FALSE)
- #~ B <- getSymbols('GOOG',auto.assign=FALSE)
- #~ C <- getSymbols('AAPL',auto.assign=FALSE)
- #~
- #~
- #~ # mr.test.simple http://epchan.blogspot.ch/2013/11/cointegration-trading-with-log-prices.html
- #~ a<-diff(log(Ad(A)))
- #~ b<-diff(log(Ad(B)))
- #~ #varA <- runVar(a,n=20)
- #~ #varB <- runVar(b,n=20)
- #~ #covAB <- runCov(a,b,n=20)
- #~ mr.test.simple <- rollapply(data=cbind(a,b),width=20,by=1,by.column = FALSE,
- #~ function(z){
- #~     #c(nrow(z),ncol(z))
- #~     cov.mat <- cov(z)
- #~     #as.numeric(cov.mat[1,2])
- #~     as.numeric(mean(diag(cov.mat))-cov.mat[1,2]) # want this to be zero
- #~ }, align = "right")
- #~
- #~
- #~ # beta: log price
- #~ al <- log(Ad(A))
- #~ bl <- log(Ad(B))
- #~ colnames(al) <- 'A'
- #~ colnames(bl) <- 'B'
- #~ require(MASS)
- #~ beta.calc <- rollapply(data=cbind(al,bl),width=20,by=1,by.column = FALSE,
- #~ function(z){
- #~     #c(nrow(z),ncol(z))
- #~     fit <- rlm(A~B+0,data=as.data.frame(z))
- #~     as.numeric(fit$coef)
- #~ }, align = "right")
- #~
-
- 
-
-############### original below ##########
-
-library(tseries) #for adf.test
- require(quantmod)
-
-getSymbols('GLD')
- getSymbols('GDX')
-
-gld <- Ad(GLD)
- gdx <- Ad(GDX)
-
-t.zoo <- merge(gld, gdx, all=FALSE)
- t <- as.data.frame(t.zoo)
- colnames(t) <- c('GLD','GDX')
-
-cat("Date range is", format(start(t.zoo)), "to", format(end(t.zoo)), "n")
-
-m <- lm(GLD ~ GDX + 0, data=t)
- beta <- coef(m)[1]
-
-cat("Assumed hedge ratio is", beta, "n")
-
-sprd <- t$GLD - beta*t$GDX
- ht <- adf.test(sprd, alternative="stationary", k=0) #important. sprd has no timeseries format!!
-
-cat("ADF p-value is", ht$p.value, "n")
-
-# expect p-value = 0.1957. not coint
-
-if (ht$p.value < 0.05) {
- cat("The spread is likely mean-revertingn")
- } else {
- cat("The spread is not mean-reverting.n")
- }
-
-
-
-
-
-
-This is a trading competition with an emphasis on the machine learning aspect
-==========================================================================
-Read and look at the data (irregular 2sec timestamps, stock)
-
-http://www
+ Or more in general:  Discover target assetts for statarb by using directed graphs where edges represent information transfer (either granger or transfer entropy) between assets. F
