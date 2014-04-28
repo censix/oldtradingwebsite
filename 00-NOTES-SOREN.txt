@@ -1,4 +1,186 @@
 
+XXXXXXXXXXXXXX
+==========================================================================
+
+
+
+XXXXXXXXXXXXXX
+==========================================================================
+
+
+
+XXXXXXXXXXXXXX
+==========================================================================
+
+
+
+
+XXXXXXXXXXXXXX
+==========================================================================
+
+
+
+Caret package - custom models
+==========================================================================
+http://caret.r-forge.r-project.org/custom_models.html
+
+Should try this out, especially the CV parameter optimization bit.
+
+We should now be ready to fit our model.
+
+
+library(mlbench)
+data(Sonar)
+
+library(caret)
+set.seed(998)
+inTraining <- createDataPartition(Sonar$Class, p = .75, list = FALSE)
+training <- Sonar[ inTraining,]
+testing  <- Sonar[-inTraining,]
+
+fitControl <- trainControl(method = "repeatedcv",
+                           ## 10-fold CV...
+                           number = 10,
+                           ## repeated ten times
+                           repeats = 10)
+
+set.seed(825)
+Laplacian <- train(Class ~ ., data = training,
+                   method = lpSVM,
+                   preProc = c("center", "scale"),
+                   tuneLength = 8,
+                   trControl = fitControl)
+print(Laplacian, digits = 3)
+157 samples
+ 60 predictors
+  2 classes: 'M', 'R' 
+
+Pre-processing: centered, scaled 
+Resampling: Cross-Validated (10 fold, repeated 10 times) 
+
+Summary of sample sizes: 142, 142, 140, 142, 142, 141, ... 
+
+Resampling results across tuning parameters:
+
+  C     Accuracy  Kappa  Accuracy SD  Kappa SD
+  0.25  0.75      0.483  0.0909       0.191   
+  0.5   0.8       0.589  0.0848       0.175   
+  1     0.824     0.642  0.0846       0.172   
+  2     0.827     0.648  0.0895       0.182   
+  4     0.851     0.697  0.081        0.165   
+  8     0.867     0.73   0.0829       0.17    
+  16    0.868     0.731  0.0817       0.168   
+  32    0.868     0.731  0.0817       0.168   
+
+Tuning parameter 'sigma' was held constant at a value of 0.01234
+Accuracy was used to select the optimal model using  the largest value.
+The final values used for the model were C = 16 and sigma = 0.0123.
+
+
+
+
+Pairs Trading, Convergence Trading, Cointegration
+==========================================================================
+Testing for the mean reversion
+ The challenge in this strategy is identifying stocks that tend to move together and therefore make potential
+ pairs. Our aim is to identify pairs of stocks with mean-reverting relative prices. To find out if two stocks
+ are mean-reverting the test conducted is the Dickey-Fuller test of the log ratio of the pair. In the
+ A Dickey-Fuller test for determining stationarity in the log-ratio yt=logAt-log Bt of share prices A and B
+ D yt = μ + g yt-1 + et (17)
+ In other words, we are regressing D yt on lagged values of yt.
+ the null hypothesis is that g=0, which means that the process is not mean reverting.
+ If the null hypothesis can be rejected on the 99% confidence level the price ratio is following a weak
+ stationary process and is thereby mean-reverting. Research has shown that if the confidence level is
+ relaxed, the pairs do not mean-revert good enough to generate satisfactory returns. This implies that a
+ very large number of regressions will be run to identify the pairs. If you have 200 stocks, you will have to
+ run 19 900 regressions, which makes this quite computer-power and time consuming.
+
+Pairs Trading, Convergence Trading, Cointegration http://www.yats.com/doc/cointegration-en.html
+ 4 of 22 19/10/2011 16:15
+
+
+
+
+
+TFX package by Garrett See - FX historical data download - 19Gb
+==========================================================================
+TrueFX provides historical tick data for 15 currency pairs going
+ back to May 2009 (http://truefx.com/?page=downloads). There is a script in
+ the inst/parser directory of the FinancialInstrument package (
+ www.tinyurl.com/DownloadTrueFX) that can be used to download all of that
+ data to disk in a format that FinancialInstrument::getSymbols.FI can easily
+ read.  Its 19 Gb !  Includes tick data !!
+
+http://www.truefx.com/dev/data/
+
+
+
+Thalesians London: Scalable Financial Computations in Python and R (0) - dec 2013
+==========================================================================
+
+
+http://www.thalesians.com/finance/index.php/Events/Seminars/Seminar111DixonZubair?_escaped_fragment_=#Date_and_Time
+
+Abstract
+
+Python and R combine ease of implementation with depth and breadth of statistical and numerical implementation support infrastructure provided by a growing and open eco-system of library developers. The ease of usage makes it a high productivity tool for modeling and statistical analysis without necessarily having a background in software engineering. However, the semiconductor industry is banking its future on parallel microprocessors due to the inability to deliver steadily increasing processor frequency gains without pushing power dissipation to unsustainable levels. Various vendors provide parallel platform optimized kernels but, at some point, there exists a trade-off between flexibility, performance, portability and dependency on third-party solutions.
+
+Software design patterns grew in popularity amongst quant finance developers in the 90's, partly because they enabled the less experienced programmer to stand on the shoulders of software veterans. However, these patterns give little consideration to the computational building-blocks of financial modeling nor are they particularly suited to supporting rapid development and deployment of financial computations in Python or R on a parallel platform. Following Kurt Keutzer (UC Berkeley Parlab) and Tim Mattson (Intel) and the recent developments by E. Gonina et al. (UC Berkeley Parlab), this talks looks to Our Pattern Language (OPL), a pattern orientated methodology, to distill the primary computations and structural patterns common to financial models and analysis. Through detailed examples of how to effectively map financial computations on multicore CPUs, multicore CPU clusters, GPUs or FPGAs, we demonstrate how OPL can be used to guide the evolution of a software framework for scalable financial computations in Python or R.
+
+Speakers
+
+Matthew Dixon is a Managing Director and Head of Americas at Thalesians Ltd.
+
+He is also a Term Assistant Professor in the MS in Analytics Program at the University of San Francisco and consultant of analytics and financial risk. He has taught computational analytics, data acquisition and financial applications of analytics using R and Python. He is the author of severals papers in high performance computational finance in collaboration with the UC Berkeley EECS Parlab and Old Dominion University CS Department and chairs the Workshop on High Performance Computational Finance at SC. He has held visiting professorship and postdoctoral research appointments in computational and applied mathematics at UC Davis and Stanford University.
+
+Dr. Dixon began his career as a quantitative developer in the structured credit trading group at Lehman Brothers in London before pursuing academics and consulting in the finance and IT industry for many years. One of his most recent projects included consulting for the private equity firm Silver Lake to develop predictive analytics for identifying investment opportunities. He holds a Ph.D. in Applied Mathematics from Imperial College in London and a MSc in Parallel and Scientific Computation (with distinction) from the University of Reading.
+
+Mohammad Zubair is a Professor in the Computer Science Department at Old Dominion University. Prof. Zubair has more than twenty years of research experience in the area of experimental computer science and engineering both at the university as well as in industry. His primary area of interest is high performance computing and management of large information.
+
+His major industrial assignment was at the IBM T.J. Watson Research center for three years, where his research focus was in high performance computing and some of his work was integrated into IBM products. His current interests are in developing high performance algorithms for multi-core architectures such as GPUs and Intel Multi-core systems. He has been successful in obtaining funds to support his research work from NASA, NSF, DTIC, ARPA, Jefferson Laboratory, Los Alamos, AFRL, NRL, JTASC, Sun Microsystems, and IBM Corporation.
+
+Resources
+■M. Dixon, S. Khan and M. Zubair, Accelerating Option Risk Analytics in R using GPUs, November 2013.
+■M. Dixon and M. Zubair, Calibration of Stochastic Volatility Models on a Multi-Core CPU Cluster, ACM Proceedings of WHPCF13: Sixth Workshop on High Performance Computational Finance, SC13, November 2013.
+■M. Dixon, J. Chong and K. Keutzer, Accelerating Value-at-Risk Estimation on Many-Core and Multi-Core Architectures, The Journal of Concurrency and Computation: Practice and Experience, Vol. 24, No. 8, Wiley, 2011.
+■K. Keutzer and T. G. Mattson, Introduction to Design Patterns for Parallel Computing, Chapter 8, The Berkeley Par Lab: Progress in the Parallel Computing Landscape, eds. D. Patterson, D. Gannon and M. Wrinn, 2013.
+
+
+
+Link to papers.nips.cc and december 2013 conference
+==========================================================================
+
+Neural Information Processing Systems
+
+http://papers.nips.cc
+
+December 2013 conference highlights (according to http://www.machinedlearnings.com  and the http://fastML.com guy)
+ http://nips.cc/Conferences/2013/Program/event.php?ID=3783
+
+Covariance matrices were hot, and not just for PCA. The BIG & QUIC algorithm
+ of Hseih et. al. for estimating large sparse inverse covariance matrices was technically
+ very impressive and should prove useful for causal modeling of biological and
+ neurological systems (presumably some hedge funds will also take interest).
+ http://nips.cc/Conferences/2013/Program/event.php?ID=4086  (Me: is this like sparse filtering ?)
+
+
+
+Synthetic Biology & Open Source Tools
+==========================================================================
+
+http://biocurious.org
+
+http://www.backyardbrains.com/
+
+http://lavaamp.wordpress.com/
+
+http://openpcr.org/
+
+http://www.pearlbiotech.com/
+
+iGEMs ??
+
+http://openwetware.org/
 
 
 
