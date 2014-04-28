@@ -1,0 +1,81 @@
+
+
+get these: Time-Series Forecasting Using Pre-trained Deep Neural Networks
+==========================================================================
+
+
+http://link.springer.com/chapter/10.1007%2F978-3-642-40728-4_57
+
+http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=6033368&url=http%3A%2F%2Fieeexplore.ieee.org%2Fxpls%2Fabs_all.jsp%3Farnumber%3D6033368
+
+http://rd.springer.com/chapter/10.1007%2F978-3-642-31837-5_3
+
+http://ieeexplore.ieee.org/xpl/login.jsp?tp=&arnumber=6272913&url=http%3A%2F%2Fieeexplore.ieee.org%2Fstamp%2Fstamp.jsp%3Ftp%3D%26arnumber%3D6272913
+
+Author of the above:
+
+http://im.sysu.edu.cn/Teachers.asp?ObjID=4&TeacherID=107
+
+[1]Cai Xianggao, Su Hu, and Xiaola Lin. Feature extraction using Restricted
+ Boltzmann Machine for stock price prediction (C). // Computer Science and
+ Automation Engineering (CSAE). Zhangjiajie: IEEE Press, 2012. 80-83
+ [2]Cai
+ Xianggao, Xiaola Lin. Forecasting High Dimensional Volatility Using Conditional
+ Restricted Boltzmann Machine on GPU (C). // Parallel and Distributed Processing
+ Symposium Workshops & PhD Forum (IPDPSW). Shanghai: IEEE Press, 2012.
+ 1979-1986
+ [3]Cai Xianggao, et al. GPU-Accelerated Restricted Boltzmann
+ Machine for Collaborative Filtering (C). // Algorithms and Architectures for
+ Parallel Processing. Fukuoka: Springer, 2012. 303-316.
+ [4]Zuo Yinbo, Cai
+ Xianggao, Xiaola Lin. A Low Delay Multi-source Multicast Algorithm for Ad hoc
+ Networks(C). //The 6th Joint IFIP Wireless and Mobile Networking Conference.
+ Dubai: IEEE Press, 2013.
+ [5]Cai Xianggao, Guoming Lai, and Xiaola Lin.
+ Forecasting large scale conditional volatility and covariance using neural
+ network on GPU〔J〕. The Journal of Supercomputing, 2013, 63(2): 490-507.
+
+The above uses CRBMs (Conditional Restricted Boltzmann Machines) which is an extension of RBMs that uses historical data, so it is sensitive to time and lagged inputs! A Theano(Python) implementation can be found here: https://gist.github.com/gwtaylor/2505670.  http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/code.html. It seems that a CRBM can be used with either binary or gaussian variables see code for matlab:
+ http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/mhmublv_code.zip
+ http://www.uoguelph.ca/~gwtaylor/publications/nips2006mhmublv/data.mat
+
+ 
+
+Maybe use convolutional networks (makes use of GPU acceleration)  http://fastml.com/object-recognition-in-images-with-cuda-convnet/
+
+http://cs229.stanford.edu/proj2012/LaiLiPong-ForecastingTradeDirectionandSizeOfFutureContractsUsingDeepBeliefNetwork.pdf
+
+ 
+
+
+
+fc snapshot on stock universe
+==========================================================================
+U:= DAX stock universe
+
+Step 1) [CLUSTERING] Cluster U into N<50 clusters {C_1,..,C_N} based on the historical daily log returns (Cl-to-Cl) [Reason: we can currently only request <50 snapshot symbols.]
+
+Step 2) [PREDICTOR SELECTION] For each stock in U, find the best 1<=K(~3)<=5 single predictors for the chosen target, i.e. Cl-to-Hi.
+■Option A) do this using robust regression significance
+■Option B) do this using 'Boruta' (regression)
+
+ 
+
+The base predictors are the chosen cluster representatives {c_1,..,c_N} and for each we either use (Cl-to-Cl, Op-to-Op, Hi-to-Hi, Lo-to-Lo)   or  (Cl-to-Cl, Cl-to-Hi), whatever works better for the given target.
+
+Step 3) [MODELING] For each stock in U, we now have K predictors {p_1,..,p_K}
+■Option A) Fit a robust regression model
+■Option B) Fit a nnet model
+■Option C) Calculate SF features and their optimal number {p_sf1,...,p_sfK1} then select K2 best predictor features with 'Boruta' then fit best model (linreg, or nnet ?)
+
+ 
+
+
+
+Brokertron - Amazon Instances with IB-gateway & Cache
+==========================================================================
+brokertron.com
+
+(Castedo Ellerman)
+
+If we ever want to move everything to the amazon cloud, this should be given consideration. Might be more secure and stable than own IBGWS setup.
