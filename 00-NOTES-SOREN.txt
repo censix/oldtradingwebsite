@@ -2,10 +2,180 @@ XXXXXXXXXXXXXX
 ==========================================================================
 
 
+XXXXXXXXXXXXXX
+==========================================================================
+
 
 XXXXXXXXXXXXXX
 ==========================================================================
 
+
+mindboggingly simple gap trading strategy - maybe run a backtest sometime
+==========================================================================
+■Consider a list of 100 securities (the Nasdaq 100, I think)
+■Using a 30-day trailing window, compute the difference (gap) between the daily opening price and the prior daily closing price
+■Normalize the gap using a z-score
+■Each day, identify the pair of stocks corresponding to the min and max gap z-scores
+■Buy the stock with the min gap z-score, and short the stock with the max gap z-score
+■After 3 pm, close open positions
+
+https://www.quantopian.com/posts/market-closed-gap-trade
+
+
+
+Using foreign C libraries (without compilation) in R
+==========================================================================
+
+http://cran.r-project.org/web/packages/rdyncall/index.html
+
+No compilation is required, just the .so file has to be provided, but calling functions and passing arguments becomes painful .....
+
+
+
+
+
+
+Read numpy data into R (binary)
+==========================================================================
+http://dirk.eddelbuettel.com/blog/2012/06/30/
+
+# Create demo numpy  data:
+#!/usr/bin/env python
+#
+# simple example for creating numpy data to demonstrate converter
+
+import numpy as np
+
+# simple float array
+a = np.arange(15).reshape(3,5) * 1.1
+
+outfile = "/tmp/data.npy"
+np.save(outfile, a)
+# use python to write special .bin file
+#!/usr/bin/python
+#
+# read a numpy file, and write a simple binary file containing
+#   two integers 'n' and 'k' for rows and columns
+#   n times k floats with the actual matrix
+# which can be read by any application or language that can read binary
+
+import struct
+import numpy as np
+
+inputfile = "/tmp/data.npy"
+outputfile = "/tmp/data.bin"
+
+# load from the file
+mat = np.load(inputfile)
+
+# create a binary file
+binfile = file(outputfile, 'wb')
+# and write out two integers with the row and column dimension
+header = struct.pack('2I', mat.shape[0], mat.shape[1])
+binfile.write(header)
+# then loop over columns and write each
+for i in range(mat.shape[1]):
+    data = struct.pack('%id' % mat.shape[0], *mat[:,i])
+    binfile.write(data)
+binfile.close()
+# Read it into R !
+#!/usr/bin/r
+
+infile <- "/tmp/data.bin"
+con <- file(infile, "rb")
+dim <- readBin(con, "integer", 2)
+Mat <- matrix( readBin(con, "numeric", prod(dim)), dim[1], dim[2])
+close(con)
+
+print(Mat)
+
+
+
+
+
+DAX Liquidity Shock 7 feb 2014 - zwischen 14:25 und 14:45 ??
+==========================================================================
+DAX Liquidity Shock 7 feb 2014 - zwischen 14:25 und 14:45 ??
+
+von 9270 auf 9230 und zurueck auf 9260 ....
+
+
+
+
+Stacked Denoising Autoencoders - Implementation for Theano
+==========================================================================
+ 
+http://deeplearning.net/tutorial/SdA.html
+
+Critical metaparameters to tune = number of autoencoders per layer and number of layers !!!
+
+Theano code:
+ http://deeplearning.net/tutorial/code/SdA.py
+
+Or better: use pylearn2 (built on theano)
+
+https://github.com/lisa-lab/pylearn2
+
+look at
+ pylearn2 / pylearn2 / models / autoencoder.py
+ for implementation of stacked denoising autoencoders.
+
+
+
+
+
+Amazing R tools from Duncan Temple Lang (RCUDA, RLLVM, ... RDropbox)
+==========================================================================
+The Father of http://omegahat.org has a git repository ....
+
+https://github.com/duncantl?tab=repositories
+
+
+
+
+
+rPython installation - purpose - use Theano (deeplearning) from R
+==========================================================================
+install rPython from CRAN
+ =====================
+ install.packages('rPython')
+ # from R do
+
+require(rPython)
+ python.load('checkGPUuse.py')
+ #works !!!
+ #python.get('vlen')
+
+# NOT SO GOOD :((  some python objects may not be JSON serializable and cannot be returned to
+ # R, which ones ? what would the R  list() in python be ?
+
+ 
+
+######## checkGPUuse.py
+from theano import function, config, shared, sandbox
+import theano.tensor as T
+import numpy
+import time
+
+vlen = 10 * 30 * 768  # 10 x #cores x # threads per core
+iters = 1000
+
+rng = numpy.random.RandomState(22)
+x = shared(numpy.asarray(rng.rand(vlen), config.floatX))
+f = function([], T.exp(x))
+print f.maker.fgraph.toposort()
+t0 = time.time()
+for i in xrange(iters):
+    r = f()
+t1 = time.time()
+print 'Looping %d times took' % iters, t1 - t0, 'seconds'
+print 'Result is', r
+if numpy.any([isinstance(x.op, T.Elemwise) for x in f.maker.fgraph.toposort()]):
+    print 'Used the cpu'
+else:
+    print 'Used the gpu'
+    
+    
 
 
 pairs (classic): raw prices + adf test
@@ -142,447 +312,4 @@ This is a trading competition with an emphasis on the machine learning aspect
 ==========================================================================
 Read and look at the data (irregular 2sec timestamps, stock)
 
-http://www.circulumvite.com/home/trading-competition#!
-
-Below is the copy of the site:
-
-
-
-
-This is a trading competition with an emphasis on the machine learning aspect ( i.e. how best to trade a security, perhaps by predicting a price in the future. ) The intent is to come up with some prediction technique that forecasts the future price of the traded instrument with a view of maximizing trading profits for the elementary strategy and market simulator given to you. We advise you to study simulate_signal.py and figure out the price you need to set in every line to have exactly the trades you intend to have.
-
-
-
-
-
-
-
-
-[ Detailed Description ]        [ Instruction files ]        [ Training Data ]        [ Larger Training Data ]        [ Submission ]        [ What is provided ]
-
-Submission Deadline : MAR-28-2014
-
-
- 
-
-
-
-Prizes : The total pot is $4,000. Top 5 candidates share the pot in proportion to their Profits. All participants with +ve scores will at least get a t-shirt.
-
-
- 
-
-
-Please email solutions to data-science-challenge [ at ] domain-name, and please provide a shortname like say "mithrandir" to identify yourself uniquely on the leaderboard.
-
-In case anything is unclear, please check the FAQs on the webpage to see if it is answered there.  If not, please drop us an email at data-science-challenge [ at ] domain-name and we will get back to you.
-
-
- 
-
-Leaderboard :
-
-
-
-
- Name
-
-  Affiliation
-
-
-
- Wouey
-
- LosAngeles
-
-
-
- TheIngloriousTrader
-
- IITK
-
-
-
- HumbleDebugger
-
- UPenn
-
-
-
- WolfOfWallStreet
-
- IITK
-
-
-
- Rkites
-
- IITKGP
-
-
-
- DarthTrader
-
- IITKGP
-
-
-
- RoadToTheAlps
-
- Switzerland
-
-
-
- QuantTraders
-
- Mumbai
-
-
-Updates here
-
-
- 
-
-
-
-
-FAQs :
-
-Q: What do I have to do again ?!?
-
-A: You have to submit a way to go from an input data file ( like the file 'prod_data_v.txt' included in the Instruction files ) to a file on which 'simulate_signal.py' can operate and print a Profit number. ref: Submission Requirements
-
-
- 
-
-Q: How and what to submit ?
-
-A: Please email three files { target-price-generator, model, trading-config } to data-science-challenge [ at ] domain-name ref: Submission Requirements
-
-
- 
-
-Q: What is the submission deadline ?
-
-A: The first round of the competition will be closed on Feb 28th 2014.
-
-
- 
-
-Q: Do I have to predict a price ? Am I not supposed to maximize profits.
-
-A: You are not at all required to predict the future price. Your solution will only be evaluated based on the profits generated by simulated_signal.py on the data file you generate. We advise you to study simulate_signal.py and figure out the price you need to set in every line to have exactly the trades you intend to have.
-
-
- 
-
-Q: Can I make new indicators/columns/features using current and past data ?
-
-A: Sure. In generating the target-price at a line you can use any data in your "modelfile" and data in that line and any line before that.
-
-     In generating the target price for say line 5 you can use any data in line 5 and lines 1-4 in the input data file.
-
-     For instance you could fit an AR(n) model and the generator script could use it to compute the target-price with data in lines 5-n to 5, and write it in the 5th line of the output file.
-
-
- 
-
-Q: Am I expected to provide a program to generate the target price ?
-
-A: Yes. You are expected to provide a program/script/exec and any required model files that when run on data of the same format as in the Training Data generates a file with "target prices" such that, when simulate_signal.py is run with the ss_trading_config.txt you supply, on the target-price-file, the profit ("PNL") is maximized. ref: Submission Requirements
-
-
- 
-
-Q: What is a model ?
-
-A: Suppose you were to make a ARIMA model on the training data, the constants found which describe the relationship you found, are called a model. You will need them when you are trying to generate a target price from test data.
-
-
- 
-
-Q: Are there any size constraints of my model file ?
-
-A: For this competition there are no requirements of size on the model. In practice most algorithmic systems are latency sensitive and hence having fast concise models is very much a desired quality.
-
-
- 
-
-Q: Is the testing data similar to training data set ?
-
-A: We don't know. We have provided you a large training data set as well. 
-
-
- 
-
-Q: Are the Profit and Trades numbers cumulative in the leaderboard or an average ?
-
-A: They are a sum over the entire Test-Data.
-
-
- 
-
-Q: If I have the highest score, and the other top four have scores that are half of my score, then how much do I win ?
-
-A: You would win approximately : ( 2/( 2 + 1 + 1 + 1 + 1 ) ) * $4,000 ! 
-
-
- 
-
-Q: Is this a recruiting contest ?
-
-A: We believe financial engineering is about feature learning and trading algorithm construction. This does have overlaps with our work. Factually it is just a fun competition. To know more about us please visit "What are we working on" .
-
-
- 
-
-Q: Does my model need to work with generate_target_price.py ?
-
-A: Absolutely not. "generate_target_price.py" is merely an illustrative example. Please write your own program to compute the target price in python/perl/R/octave/ or any other freely available language. In case you learn parameters to your program from training data, please compile it inot a file and submit it with your target price generation exec since the exec will not work otherwise.
-
-
- 
-
-Q: Can I change ss_trading_config.txt ?
-
-A: You are expected to submit your choice of ss_trading_config.txt. Optimizing this parameter should yield significant improvement in performance. In the instruction files you will find two other choices of trading config provided. Higher values will make the trading more direction or prediction based.
-
-
-
-
-Q: Instead of predicting the price how do I predict a direction ?
-
-A: In real trading you have to decide the price to execute your trades as well. If you want to buy at the offer price and sell at the bid price, you can express that by setting the trading_config parameter to be 0.99 and when you want to buy set the target price to AskPrice+1 and when you want to sell set the target-price to BidPrice-1. There are many other ways this can be done of course. 
-
-
- 
-
-Q: Can I buy on one day and sell on another day ?
-
-A: If you mean starting a trade and closing it on another day, that is not supported. We assume that trades are closed at the last price of the day.
-
-
- 
-
-Q: How many times can I submit solutions ?
-
-A: Since the processing of a submission is quite manual, we would advise not more than five solutions a week.
-
-
- 
-
-Q: Can I submit a solution written in language-X ?
-
-A: In general, if you want to use something freely available under GPL, and which is cross-platform, we should be fine with it. An example of what is not fine : Matlab isn't fine, but Octave works.
-
-
- 
-
-Q: Are there any marks for readability ?
-
-A: Nope. Profits are the only metric in this contest.
-
-
- 
-
-Q: Are we allowed to participate in teams ?
-
-A: We feel this competition is best attempted without collaboration.
-
-
- 
-
-Q: What is the meaning of the given data ?
-
-A: You are given a time-series of the current price of the stock and several indicators that might be useful in predicting the future change in stock price.
-
-
- 
-
-Q: Is there a "loss function" for the target-price ?
-
-A: No. You might want to come up with the best estimate of fair stock price ( "target-price" ) at each timestamp. What you really should focus on is to find a price series that on the trading-simulator maximizes profits. The reward function is purely profits printed by the simulator. One of the main goals of a data scientist is to apply their knowledge to domains without well behaved loss functions one has studied.
-
-
- 
-
-Q: Is there a way to use my current position or the past trade-history to set the target price for a line ?
-
-A: This is a very fair criticism, but unfortunately this is not possible right now.
-
-
- 
-
-Q: Is our aim to use training data files and predict the second column in those files by using past values of other columns ( i.e. columns 7 to end ) ?
-
-A: I would not put it that way. Our basic aim is simply to write a program that given a testing data file, generates an output file with columns 1,3,4,5,6 same as the input data file and column 2 values set for each line according to our strategy for maximizing profits on that day. For generating the value for a line, say 300th line, we can use all data at or before that line, I mean lines 1 to 300. The columns 7 to end are provided in the hope that you find value in the from a perspective of trading, but some or all of them could very well be useless. The training data files are provided for you to build your models or to learn from it if you want to assume that there will be some similarity between testing and training data.
-
-
- 
-
-Q: Do we have to provide a trading-config file, with a threshold value beyond which we will place trades ?
-
-A: You do have to provide a trading config file. The interpretation of the threshold is that if the targetprice - bidprice < threshold then you don't want to place a bid at that price. Similarly if askprice - targetprice < threshold then placing the ask is profitable enough for you to place a SELL order at the askprice.
-
-
- 
-
-Q: We have been provided a large number of training files. Are these completely for training and testing our model ?
-
-A: Yes, the training files have zero overlap with files on which your program will be tested. Use them as you please.
-
-
- 
-
-Q; If I submit the solution ten days from now will I lose out on profits ?
-
-A: The testing data has been frozen and no matter when you submit your solution it will be evaluated on the same dataset. Please submit before the deadline though :)
-
-
- 
-
-
-
-
-Detailed Description :
-
-In both training data sets, you are given a set of files (each file corresponding to a different date). Each line in the file consists of the L1 data (best bid and ask prices and sizes) of a hypothetical stock at the specified point in time along with the values of a few indicators/predictors at the same point in time.  For further details, please refer to the file README.txt. We have not adjusted the data across dates (for dividends etc.) As such the basic market simulator assumes that you don’t hold positions across days. You should also avoid any comparison of data across dates (for example using returns across days) to avoid getting spurious results. 
-
-
- 
-
-Your predicted prices would be tested using the simulator on a separate set of test data files.
-
-
- 
-
-You are already provided a bunch of predictor variable values. In practice, a large amount of work can be put into coming up with relevant predictors. However to keep the scope of the problem manageable, you can take these as given. This way you can focus on how best to predict future prices. Keep in mind that you can choose to use different notions of ‘price’. You are provided L1 data – you can choose to use the mid of the best bid and ask prices; or some weighted combination of the bid and ask. As always, your intent should be to choose something, which maximizes profits. We encourage you to look into follow your intuition into deciding whether to work on making new predictor values or improve trading or improve the combination of predictors.
-
-
- 
-
-Your predicted prices will be fed into an elementary market simulator.  Again given a predicted price, there can be a lot of complexity in how you go about executing on it. To keep it simple, we use a very basic market simulator and execution algorithm. Keep in mind that a prediction technique which works well for some set of execution algo and market simulator might behave quite badly on a different set, so you need to take that into account. 
-
-
- 
-
-The particular market simulator and trading strategy that we use is very basic. At any point of time you can either be long one contract or short one contract or flat (holding no positions.) You feed the simulator a threshold value (the only parameter that you are allowed to change in the execution/simulation framework.) If the predicted price is higher (lower) than the best ask (best bid) by that threshold value it will place a market order to buy (sell) as long as it is within its risk limits. If thesignal is not so strong, it can alternately place a limit buy order (sell order) as long as the predicted target price is above the best bid (best ask) by the threshold amount and the strategy is within its risk limits. It always places limit orders at the corresponding L1 price.  Market orders are filled immediately if applicable. Limit orders are filled using a simple heuristic. For simplicity we assume 2 cents commission and no slippage on the trades. 
-
-
- 
-
-
-
-
-What is provided :
-
-■Data files containing data in a specified format. You can choose to use them as any combination of training/cross-validation data.
-■Market simulator and basic execution framework in simulate_signal.py. You can test your prediction to see how well it works using this script. For example if your output file for a particular date is my_generated_target.txt and your threshold value for placing trades is in ss_trading_config.txt, you can run "simulate_signal.py   my_generated_target.txt   ss_trading_config.txt" to see how it performs.
-■check_for_lookup_error_in_target_price_gen.sh. You need to run your solution by this, to check if you have made any incorrect assumptions, which result in look-ahead bias. Only solutions that have no look-ahead bias will be considered.
-■Some sample solutions have been included in the instruction files. They are optional of course.
-
-
- 
-
-Submission requirements :
-
-You need to submit
-
-■Your price-prediction program, (for example my_generate_target_price.py) which takes as input the price-indicator-data for a day ( eg, price_data_mmdd.txt ) and any model parameters required by your algorithm, outputs a file with the predicted values in the specified format (please refer to file README.txt) expected by simulate_signal.py
-■ModelFile with the parameters that may be required by your price-prediction program
-■Trading Configuration ( e.g. "ss_trading_config.txt" )
-
-You should provide details about how your program should be run as well as any parameters etc. that it needs. We would love to hear more about your thought process as well. Of course there are no points for that :)
-
-
- 
-
-For example, 
-
-my_generate_target_price.py my_model.txt price_data_mmdd.txt > my_generated_target.txt
-
-The generated file should satisfy the following requirements
-■Follow the format specified in README.txt
-■Have same number of lines as in price_data_mmdd.txt
-■Apart from second column ( predicted price ), columns 3,4,5,6 on any line should be same as the corresponding columns in the line in price_data_mmdd.txt.
-■Should not have any lookahead ( see third item in ref "What is provided" )
-
-
- 
-
-
-
-Caret package - custom models
-==========================================================================
-http://caret.r-forge.r-project.org/custom_models.html
-
-Should try this out, especially the CV parameter optimization bit.
-
-We should now be ready to fit our model.
-
-
-library(mlbench)
-data(Sonar)
-
-library(caret)
-set.seed(998)
-inTraining <- createDataPartition(Sonar$Class, p = .75, list = FALSE)
-training <- Sonar[ inTraining,]
-testing  <- Sonar[-inTraining,]
-
-fitControl <- trainControl(method = "repeatedcv",
-                           ## 10-fold CV...
-                           number = 10,
-                           ## repeated ten times
-                           repeats = 10)
-
-set.seed(825)
-Laplacian <- train(Class ~ ., data = training,
-                   method = lpSVM,
-                   preProc = c("center", "scale"),
-                   tuneLength = 8,
-                   trControl = fitControl)
-print(Laplacian, digits = 3)
-157 samples
- 60 predictors
-  2 classes: 'M', 'R' 
-
-Pre-processing: centered, scaled 
-Resampling: Cross-Validated (10 fold, repeated 10 times) 
-
-Summary of sample sizes: 142, 142, 140, 142, 142, 141, ... 
-
-Resampling results across tuning parameters:
-
-  C     Accuracy  Kappa  Accuracy SD  Kappa SD
-  0.25  0.75      0.483  0.0909       0.191   
-  0.5   0.8       0.589  0.0848       0.175   
-  1     0.824     0.642  0.0846       0.172   
-  2     0.827     0.648  0.0895       0.182   
-  4     0.851     0.697  0.081        0.165   
-  8     0.867     0.73   0.0829       0.17    
-  16    0.868     0.731  0.0817       0.168   
-  32    0.868     0.731  0.0817       0.168   
-
-Tuning parameter 'sigma' was held constant at a value of 0.01234
-Accuracy was used to select the optimal model using  the largest value.
-The final values used for the model were C = 16 and sigma = 0.0123.
-
-
-
-
-Pairs Trading, Convergence Trading, Cointegration
-==========================================================================
-Testing for the mean reversion
- The challenge in this strategy is identifying stocks that tend to move together and therefore make potential
- pairs. Our aim is to identify pairs of stocks with mean-reverting relative prices. To find out if two stocks
- are mean-reverting the test conducted is the Dickey-Fuller test of the log ratio of the pair. In the
- A Dickey-Fuller test for determining stationarity in the log-ratio yt=logAt-log Bt of share prices A and B
- D yt = μ + g yt-1 + et (17)
- In other words, we are regressing D yt on lagged values of yt.
- the null hypothesis is that g=0, which means that the process is not mean reverting.
- If the null hypothesis can be rejected on the 99% confidence level the price ratio is following a weak
- stationary process and is thereby mean-reverting. Research has shown that if the confidence level is
- relaxed, the pairs do not mean-revert good enough to generate satisfactory returns. This implies that a
- very large number of regressions will be run to identify the pairs. If you have 200 stocks, you will have to
- run 19 900 regressions, which makes this quite computer-power and time consu
+http://www
