@@ -76,16 +76,35 @@
                 <p>
 Stacked Autoencoders (SAs) and Restricted Boltzmann Machines (RBMs) are very powerful models for unsupervised learning.  Unfortunately, at the time of writing it looks as if there are no direct R implementations available, which is surprising since both model types have been around for a while and R has implementations for many other machine learning model types. As a workaround, SAs could be implemented using one of several neural network packages of R fairly quickly (nnet, AMORE) and RBMs, well, someone would have to write a good R implementation for them. But given that training both model types requires a lot of computational resources, we also want an implementation that can make use of GPUs. So at the moment the simplest solution we seem to have is to use <a href="http://deeplearning.net/software/theano/">Theano</a>. It can use GPUs and it provides implementations of stacked (denoising) autoencoders and RBMs. In addition Python/Theano code for several other more exotic Boltzmann Machine variants is floating around the net as well. We can use rPython to call these Python functions from R but the challenge is the data. Getting large datasets back and forth between R and Python without using the ascii serialization that rPython implements (too slow) needs to be solved. An at least equally potent implementation of autoencoders that supports GPU use is available via the Torch7 framework <a href="https://github.com/clementfarabet/torch7-demos">(demo)</a>. However, Torch7 functions are called using ‘lua’ and calling them from within R instead will require some work at C level.
 In conclusion: Use Theano(Python) or Torch7(lua) for training models with GPU support and write the trained models to file. In R, import the trained model from file and use for prediction.
+</br>
 Update 25 April 2014: The following nice solution <a href="http://gallery.rcpp.org/articles/rcpp-python/">“Call Python from R through Rcpp”</a> should bring us one step closer to using Theano directly from R.
                 </p>
                 <hr>
                 
                 <!-- blog entry -->
-                <h1><a href="#"> The title for this post </a>
+                <h1><a href="#"> What Frequencies to Trade ?  </a>
                 </h1>
-                <p><span class="glyphicon glyphicon-time"></span> March 12, 2014 </p>
+                <p><span class="glyphicon glyphicon-time"></span> january 13, 2014 </p>
                 <img src="http://placehold.it/150x150" class="img-responsive" align='right'>
-                <p> The main text of this post  </p>
+                <p>
+When trying to find exploitable market patterns that one could trade as a retail trader, one of the first questions is: What trading frequencies to look at? Monthly? Weekly? Daily? Or intraday anywhere between 5 seconds to 1 hour? With limited time available for conducting research at all of these timescales, this becomes an important question to answer. I and others have observed that there seems to be a simple relationship between trading frequency and amount of effort needed to find a profitable strategy that is purely quantitative and has acceptable risk. In short:
+
+The lower (=slower) the frequency you want to trade at, the ‘smarter’ your profitable strategy needs to be.
+
+tradefreqvssmartnessAs an example, one could look at the (very) high frequency end of the spectrum, where marketmaking strategies based on really very simple mathematics can be very profitable, if you manage to be close enough to the market center.
+
+Taking a big jump into the daily frequency realm, it is becoming much harder to find quantitative strategies that are profitable while still being based on rather simple mathematics.
+
+Trading in weekly and monthly intervals, using simple quantitative methods or ‘technical’ indicators only is a very good recipe for disaster.
+
+So, assuming for a moment that this relationship is indeed true and also considering that we can and want to use sophisticated machine learning techniques in our trading strategies, we could start with a weekly frequency window and work our way towards higher frequencies.
+
+Weekly trading does not have to be automated at all and can be done from any web-based brokerage interface.  We could develop a bag of strategies, using publicly available historical data in combination with our favourite learning algorithm to find tradeable market patterns and then execute the strategy manually. At this scale, all the effort should go into finding and fine-tuning the quantitative strategy and very little thought needs to be put into trade execution. Trade automation effort: 0%. Strategy smartness required: 100%
+
+Daily trading should be automated, unless you can really dedicate a fixed portion of your day to monitoring the markets and executing trades.  Integrating  machine learning algorithms with automated daily trading is not a trivial tasks, but it can be done. Trade automation effort: 20%, Strategy smartness required: 80%
+
+On intraday timescales, ranging from minutes and seconds to sub-seconds, the effort you will have to undertake to automate your trades can lie anywhere in the range between 20% and 90%. Fortunately the smaller the timescale becomes the ‘dumber’ your strategy can be, but ‘dumb’ is of course a relative concept here. Trade automation effort: 80%, Strategy smartness required: 20%
+                </p>
                 <hr>                
 
                 <!-- blog entry -->
