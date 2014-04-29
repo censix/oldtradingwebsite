@@ -64,7 +64,7 @@
                 <h1><a href="#">Feature Selection – Breadth vs. Depth </a>
                 </h1>
                 <p><span class="glyphicon glyphicon-time"></span> March 12, 2014</p>
-                <img src="http://placehold.it/150x150" class="img-responsive" align='right'>
+                <img src="images/breadth_depth01.png" class="img-responsive" align='right'>
                 <p>Lets say we have a univariate timeseries predicition target that can either be of type regression or classification, and we have to decide what input features to select. More concretely, we have a large universe of timeseries that we can use as inputs and we would like to know how many we should pick (breadth) and also how far back in time we want to look for each one (depth). There is a two dimensional space of choices, delimited by the following four extreme cases, under the assumption that we have a total of N series and we can, at the most, look back K timesteps: (1) pick only one series and lookback one timestep, (2) pick only one series and lookback K timesteps, (3) pick N series and lookback one timestep, (4) pick N series and lookback K timesteps.  The optimal choice will likely not be either of those, since (1) and (2) may not contain enough predictve information and (3) and especially (4) will either not be feasible due to computing contstraints or contain too much random noise. The suggested way of approaching this is to start small at (1), see what performance you get, and then increase the size of the input space, either breadth or depth-wise, until you have reached satisfactory prediction performance or until you have exhausted your computing resources and need to either abandon the whole approach :( or buy a new (farm of) desktop(s) :)</p>
                 <hr>
 
@@ -72,7 +72,7 @@
                 <h1><a href="#"> Using Stacked Autoencoders and Restricted Boltzmann Machines in R  </a>
                 </h1>
                 <p><span class="glyphicon glyphicon-time"></span> February 12, 2014 </p>
-                <img src="http://placehold.it/150x150" class="img-responsive" align='right'>
+                <img src="images/rbm-e1392221228823.jpg" class="img-responsive" align='right'>
                 <p>
 Stacked Autoencoders (SAs) and Restricted Boltzmann Machines (RBMs) are very powerful models for unsupervised learning.  Unfortunately, at the time of writing it looks as if there are no direct R implementations available, which is surprising since both model types have been around for a while and R has implementations for many other machine learning model types. As a workaround, SAs could be implemented using one of several neural network packages of R fairly quickly (nnet, AMORE) and RBMs, well, someone would have to write a good R implementation for them. But given that training both model types requires a lot of computational resources, we also want an implementation that can make use of GPUs. So at the moment the simplest solution we seem to have is to use <a href="http://deeplearning.net/software/theano/">Theano</a>. It can use GPUs and it provides implementations of stacked (denoising) autoencoders and RBMs. In addition Python/Theano code for several other more exotic Boltzmann Machine variants is floating around the net as well. We can use rPython to call these Python functions from R but the challenge is the data. Getting large datasets back and forth between R and Python without using the ascii serialization that rPython implements (too slow) needs to be solved. An at least equally potent implementation of autoencoders that supports GPU use is available via the Torch7 framework <a href="https://github.com/clementfarabet/torch7-demos">(demo)</a>. However, Torch7 functions are called using ‘lua’ and calling them from within R instead will require some work at C level.
 In conclusion: Use Theano(Python) or Torch7(lua) for training models with GPU support and write the trained models to file. In R, import the trained model from file and use for prediction.
@@ -86,7 +86,7 @@ Update 25 April 2014: The following nice solution <a href="http://gallery.rcpp.o
                 <h1><a href="#"> What Frequencies to Trade ?  </a>
                 </h1>
                 <p><span class="glyphicon glyphicon-time"></span> January 13, 2014 </p>
-                <img src="http://placehold.it/150x150" class="img-responsive" align='right'>
+                <img src="images/tradefreqvssmartness-300x300.jpg" class="img-responsive" align='right'>
                 <p>
 When trying to find exploitable market patterns that one could trade as a retail trader, one of the first questions is: What trading frequencies to look at? Monthly? Weekly? Daily? Or intraday anywhere between 5 seconds to 1 hour? With limited time available for conducting research at all of these timescales, this becomes an important question to answer. I and others have observed that there seems to be a simple relationship between trading frequency and amount of effort needed to find a profitable strategy that is purely quantitative and has acceptable risk. In short:
 
@@ -112,7 +112,7 @@ On intraday timescales, ranging from minutes and seconds to sub-seconds, the eff
                 <h1><a href="#"> What features to use ? Hand-crafted vs. learned </a>
                 </h1>
                 <p><span class="glyphicon glyphicon-time"></span> December 10, 2013 </p>
-                <img src="http://placehold.it/150x150" class="img-responsive" align='right'>
+                <!-- img src="http://placehold.it/150x150" class="img-responsive" align='right' -->
                 <p> 
                 At one point in the design of a (machine) learning system you will inevitable ask yourself what features to feed into your model. There are at least two options. The first is to use hand-crafted features. This option will normally give you good results if the features are designed well (that of course is a tautology, since you would only call them well designed if they gave you good results ….). Designing hand-crafted features requires expert knowledge about the field to which the learning system will be applied, i.e. audio classification, image recognition or in our case trading. The problem here is that you may not have any of that expert knowledge (yet) and it will be very difficult to come by or take a lot of time or most likely both. So the alternative is to learn the features from the data or in other words, use unsupervised learning to obtain them.  One requirement here is that you really need lots of data. Much more of it than you would need for hand-crafted features, but then again it doesn’t have to be labeled. The benefit however is clear. You don’t really need to be an expert in the specific field you design the system for, i.e. trading and finance. So while you still need to figure out which subset of the learned features will be best for your learning system, that is also something you would have to do with the hand-crafted features. My suggestion: Try designing some hand-crafted features by yourself. If they don’t perform and you have good reasons to believe that it is possible to have better results than the ones you are getting, use unsupervised learning methods to learn features. You can even create a hybrid system that uses designed and learned features together. 
                 </p>
@@ -122,7 +122,7 @@ On intraday timescales, ranging from minutes and seconds to sub-seconds, the eff
                 <h1><a href="#"> Why I use Open Source tools for building trading applications </a>
                 </h1>
                 <p><span class="glyphicon glyphicon-time"></span> November 19, 2013 </p>
-                <img src="http://placehold.it/150x150" class="img-responsive" align='right'>
+                <!-- img src="http://placehold.it/150x150" class="img-responsive" align='right' -->
                 <p> 
                 When I first started to look into doing my own automated trading, I had three requirements on the set of tools that I wanted to use. 1) They should cost as little as possible to get me started, even if that meant that I had to do a lot of programming and customizations myself (==it would cost time)   2) There should be a community of like-minded people out there using these same tools for a similar purpose. 3) The tools should allow me to go as deep into the entrails of the system as necessary, even if in the very beginning my aim was more to discover the basics. I did not want to find myself in a situation where two years down the line I would need to switch to a different set of tools, just because the ones I had started out with did not allow me to do what I wanted because of problems with closed sources and restrictive licensing.
 
