@@ -3748,10 +3748,10 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 }
 .navbar-brand {
   float: left;
-  height: 20px;
+  height: 40px;
   padding: 15px 15px;
   font-size: 36px;
-  line-height: 20px;
+  line-height: 40px;
   text-decoration: none;
   text-transform: uppercase;
 }
