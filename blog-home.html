@@ -69,11 +69,15 @@
                 <hr>
 
                 <!-- blog entry -->
-                <h1><a href="#"> The title for this post </a>
+                <h1><a href="#"> Using Stacked Autoencoders and Restricted Boltzmann Machines in R  </a>
                 </h1>
-                <p><span class="glyphicon glyphicon-time"></span> March 12, 2014 </p>
+                <p><span class="glyphicon glyphicon-time"></span> February 12, 2014 </p>
                 <img src="http://placehold.it/150x150" class="img-responsive" align='right'>
-                <p> The main text of this post  </p>
+                <p>
+Stacked Autoencoders (SAs) and Restricted Boltzmann Machines (RBMs) are very powerful models for unsupervised learning.  Unfortunately, at the time of writing it looks as if there are no direct R implementations available, which is surprising since both model types have been around for a while and R has implementations for many other machine learning model types. As a workaround, SAs could be implemented using one of several neural network packages of R fairly quickly (nnet, AMORE) and RBMs, well, someone would have to write a good R implementation for them. But given that training both model types requires a lot of computational resources, we also want an implementation that can make use of GPUs. So at the moment the simplest solution we seem to have is to use <a href="http://deeplearning.net/software/theano/">Theano</a>. It can use GPUs and it provides implementations of stacked (denoising) autoencoders and RBMs. In addition Python/Theano code for several other more exotic Boltzmann Machine variants is floating around the net as well. We can use rPython to call these Python functions from R but the challenge is the data. Getting large datasets back and forth between R and Python without using the ascii serialization that rPython implements (too slow) needs to be solved. An at least equally potent implementation of autoencoders that supports GPU use is available via the Torch7 framework <a href="https://github.com/clementfarabet/torch7-demos">(demo)</a>. However, Torch7 functions are called using ‘lua’ and calling them from within R instead will require some work at C level.
+In conclusion: Use Theano(Python) or Torch7(lua) for training models with GPU support and write the trained models to file. In R, import the trained model from file and use for prediction.
+Update 25 April 2014: The following nice solution <a href="http://gallery.rcpp.org/articles/rcpp-python/">“Call Python from R through Rcpp”</a> should bring us one step closer to using Theano directly from R.
+                </p>
                 <hr>
                 
                 <!-- blog entry -->
