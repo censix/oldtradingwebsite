@@ -76,7 +76,8 @@
                 <p>
 Stacked Autoencoders (SAs) and Restricted Boltzmann Machines (RBMs) are very powerful models for unsupervised learning.  Unfortunately, at the time of writing it looks as if there are no direct R implementations available, which is surprising since both model types have been around for a while and R has implementations for many other machine learning model types. As a workaround, SAs could be implemented using one of several neural network packages of R fairly quickly (nnet, AMORE) and RBMs, well, someone would have to write a good R implementation for them. But given that training both model types requires a lot of computational resources, we also want an implementation that can make use of GPUs. So at the moment the simplest solution we seem to have is to use <a href="http://deeplearning.net/software/theano/">Theano</a>. It can use GPUs and it provides implementations of stacked (denoising) autoencoders and RBMs. In addition Python/Theano code for several other more exotic Boltzmann Machine variants is floating around the net as well. We can use rPython to call these Python functions from R but the challenge is the data. Getting large datasets back and forth between R and Python without using the ascii serialization that rPython implements (too slow) needs to be solved. An at least equally potent implementation of autoencoders that supports GPU use is available via the Torch7 framework <a href="https://github.com/clementfarabet/torch7-demos">(demo)</a>. However, Torch7 functions are called using ‘lua’ and calling them from within R instead will require some work at C level.
 In conclusion: Use Theano(Python) or Torch7(lua) for training models with GPU support and write the trained models to file. In R, import the trained model from file and use for prediction.
-</br>
+<br>
+<br>
 Update 25 April 2014: The following nice solution <a href="http://gallery.rcpp.org/articles/rcpp-python/">“Call Python from R through Rcpp”</a> should bring us one step closer to using Theano directly from R.
                 </p>
                 <hr>
@@ -84,7 +85,7 @@ Update 25 April 2014: The following nice solution <a href="http://gallery.rcpp.o
                 <!-- blog entry -->
                 <h1><a href="#"> What Frequencies to Trade ?  </a>
                 </h1>
-                <p><span class="glyphicon glyphicon-time"></span> january 13, 2014 </p>
+                <p><span class="glyphicon glyphicon-time"></span> January 13, 2014 </p>
                 <img src="http://placehold.it/150x150" class="img-responsive" align='right'>
                 <p>
 When trying to find exploitable market patterns that one could trade as a retail trader, one of the first questions is: What trading frequencies to look at? Monthly? Weekly? Daily? Or intraday anywhere between 5 seconds to 1 hour? With limited time available for conducting research at all of these timescales, this becomes an important question to answer. I and others have observed that there seems to be a simple relationship between trading frequency and amount of effort needed to find a profitable strategy that is purely quantitative and has acceptable risk. In short:
@@ -108,12 +109,41 @@ On intraday timescales, ranging from minutes and seconds to sub-seconds, the eff
                 <hr>                
 
                 <!-- blog entry -->
+                <h1><a href="#"> What features to use ? Hand-crafted vs. learned </a>
+                </h1>
+                <p><span class="glyphicon glyphicon-time"></span> December 10, 2013 </p>
+                <img src="http://placehold.it/150x150" class="img-responsive" align='right'>
+                <p> 
+                At one point in the design of a (machine) learning system you will inevitable ask yourself what features to feed into your model. There are at least two options. The first is to use hand-crafted features. This option will normally give you good results if the features are designed well (that of course is a tautology, since you would only call them well designed if they gave you good results ….). Designing hand-crafted features requires expert knowledge about the field to which the learning system will be applied, i.e. audio classification, image recognition or in our case trading. The problem here is that you may not have any of that expert knowledge (yet) and it will be very difficult to come by or take a lot of time or most likely both. So the alternative is to learn the features from the data or in other words, use unsupervised learning to obtain them.  One requirement here is that you really need lots of data. Much more of it than you would need for hand-crafted features, but then again it doesn’t have to be labeled. The benefit however is clear. You don’t really need to be an expert in the specific field you design the system for, i.e. trading and finance. So while you still need to figure out which subset of the learned features will be best for your learning system, that is also something you would have to do with the hand-crafted features. My suggestion: Try designing some hand-crafted features by yourself. If they don’t perform and you have good reasons to believe that it is possible to have better results than the ones you are getting, use unsupervised learning methods to learn features. You can even create a hybrid system that uses designed and learned features together. 
+                </p>
+                <hr>
+
+                <!-- blog entry -->
                 <h1><a href="#"> The title for this post </a>
                 </h1>
                 <p><span class="glyphicon glyphicon-time"></span> March 12, 2014 </p>
                 <img src="http://placehold.it/150x150" class="img-responsive" align='right'>
                 <p> The main text of this post  </p>
                 <hr>
+
+                <!-- blog entry -->
+                <h1><a href="#"> The title for this post </a>
+                </h1>
+                <p><span class="glyphicon glyphicon-time"></span> March 12, 2014 </p>
+                <img src="http://placehold.it/150x150" class="img-responsive" align='right'>
+                <p> The main text of this post  </p>
+                <hr>
+
+                <!-- blog entry -->
+                <h1><a href="#"> The title for this post </a>
+                </h1>
+                <p><span class="glyphicon glyphicon-time"></span> March 12, 2014 </p>
+                <img src="http://placehold.it/150x150" class="img-responsive" align='right'>
+                <p> The main text of this post  </p>
+                <hr>
+
+
+
 
 
                 <!-- second blog entry -->
