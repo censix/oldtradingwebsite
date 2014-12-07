@@ -42,16 +42,19 @@
 <a href="https://www.interactivebrokers.com/en/index.php?f=1286">https://www.interactivebrokers.com/en/index.php?f=1286</a><br>
 After&nbsp; you click on “Individual demo”&nbsp; and give the .jnlp file permission to execute on your local system, choose the classic layout. You will then see<br>
 
-<a href="images/Screenshot-from-2014-01-14-190531.png"><img class="alignnone size-medium wp-image-217" alt="Screenshot from 2014-01-14 19:05:31" src="http://censix.com/wp-content/uploads/2014/04/Screenshot-from-2014-01-14-190531-300x225.png" width="300" height="225"></a><br>
-    <a href="#" class="thumbnail"><img data-src="holder.js/100%x180" src="images/Screenshot-from-2014-01-14-190531.png" alt="..."></a>
+<a href="#" class="thumbnail"><img data-src="holder.js/100%x180" src="images/Screenshot-from-2014-01-14-190531.png" alt="..."></a><br>
 
 Now click on “Edit” , “Global Configuration”, then go to “API – Settings”.&nbsp; you will see<br>
 <a href="images/Screenshot-from-2014-01-14-190602.png"><img class="alignnone size-medium wp-image-218" alt="Screenshot from 2014-01-14 19:06:02" src="http://censix.com/wp-content/uploads/2014/04/Screenshot-from-2014-01-14-190602-300x247.png" width="300" height="247"></a><br>
+<a href="#" class="thumbnail"><img data-src="holder.js/100%x180" src="images/Screenshot-from-2014-01-14-190602.png" alt="..."></a><br>
+
 Two things will need to be changed on this screen.<br>
 1) Check “Enable ActiveX and Socket Clients” to allow API connections<br>
 2) Change the “Socket Port” value to the value you are using in INTRADAY PartA and PartB, i.e.5001.&nbsp; In this example I have used 5000.<br>
 The result will look like this:<br>
 <a href="images/Screenshot-from-2014-01-14-190637.png"><img class="alignnone size-medium wp-image-219" alt="Screenshot from 2014-01-14 19:06:37" src="http://censix.com/wp-content/uploads/2014/04/Screenshot-from-2014-01-14-190637-300x247.png" width="300" height="247"></a><br>
+<a href="#" class="thumbnail"><img data-src="holder.js/100%x180" src="images/Screenshot-from-2014-01-14-190637.png" alt="..."></a><br>
+
 Click “OK” or “Apply” and now you will be able to connect the INTRADAY PartA and PartB to the IB demo.</p>
 <p>IMPORTANT: It seems that the IB demo will, for some contracts, return a wrong “liquid time” value (=time, in your local timezone, that the contract is tradeable). It will return ‘CLOSED’ instead of an actual timevalue. This will cause the strategy to refuse trading, even if it is getting marketdata, since the&nbsp; ‘CLOSED’ value indicates a closed exchange, so there is no point in placing oders. It is possible to *hack* the strategy so that it ignores this information, for demo purposes. However this is not recommended for&nbsp; paper or live trading for obvious reasons.</p>
 
