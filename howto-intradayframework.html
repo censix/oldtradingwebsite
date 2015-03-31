@@ -36,18 +36,13 @@
         <div class="row">
             <div class="col-lg-8">
 
-<p>Make sure you get partA and partB (<a href="downloads.html">download here</a>) of the pure R intraday trading framework. Note that it has been designed and tested entirely on linux (ubuntu) and it probably won’t work out-of-the-box on windows.</p>
+<p>Clone or download the pure R intraday trading framework from repository "INTRADAY-PartAB". Note that it has been designed and tested entirely on linux (ubuntu) and it probably won’t work out-of-the-box on windows.</p>
 <p>Also make sure your system has the following:</p>
 <ul>
 <li>R 2.15 or greater with the following packages: IBrokers, quantmod, blotter, mmap</li>
 <li>IB gateway or tws running and accepting local API client connections on port 5001, running with a Paper-trading account. API ClientId’s 99 and 96 will be used. (<a href="howto-intradayframework-connecting-to-ib-demo-account.html">See this page</a> on how to connect to an IB demo TWS)</li>
 </ul>
-<p>Create a dedicated directory in your home path and work from there:</p>
-<p><code>mkdir /home/myself/rintraday<br>
-cd /home/myself/rintraday</code></p>
-<p>Extract the partA and partB files in /home/myself/rintraday:</p>
-<p><code>tar -xzvf INTRADAY-PartA.tar.gz<br>
-tar -xzvf INTRADAY-PartB.tgz</code></p>
+
 <p><strong><span style="text-decoration: underline;">Configure PartA:</span></strong><br>
 We will configure PartA to produce two feeds. EURUSD 15sec bars and EURGBP 15sec bars. Open “INTRADAY-PartA/datafeed-config.r” and modify IBcontractSpecs &lt;- … so that it reads like this:</p>
 <p><code>IBcontractSpecs &lt;- list( # Currencies - 15sec bars<br>
